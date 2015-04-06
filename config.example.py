@@ -3,7 +3,7 @@ database_uri = 'mysql://root@localhost/pushjet_api'
 
 # Are we debugging the server?
 # Do not turn this on when in production!
-debug = False
+debug = True
 
 # Limit requests?
 limiter = False
