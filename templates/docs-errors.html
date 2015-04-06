@@ -1,0 +1,29 @@
+<h2 id="errors" class="content-subhead">Errors</h2>
+<p id="doc-error">
+    Errors are returned when either you or the service make a mistake. They contain
+    a short message telling the client what is wrong as well as an ID.
+</p>
+<table id="doc-error-table" class="pure-table pure-table-striped" style="width:100%;">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Text</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for err in docs.errors.keys() | sort %}
+        <tr id="error-{{ err }}">
+            <td>{{ err }}</td>
+            <td>{{ docs.errors[err].text }}</td>
+            <td>{{ docs.errors[err].description | quickmd | safe }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<pre class="code"><code class="json" id="example-error">{
+    "error": {
+    "id": 1,
+    "message": "Invalid client uuid"
+    }
+    }</code></pre>

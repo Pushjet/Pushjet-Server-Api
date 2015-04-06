@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/pure-min.css" rel="stylesheet">
+    <link href="/static/css/pure-straight.css" rel="stylesheet">
+    <link href="/static/css/color-brewer.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <title>Pushjet documentation</title>
+    <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+<div id="layout">
+    <div id="main">
+        <div class="header">
+            <h1>Pushjet API</h1>
+
+            <h2>Documentation and examples</h2>
+        </div>
+        <div class="content">
+            <h2 id="about" class="content-subhead">About</h2>
+
+            <div class="pure-g" id="_object-placeholder">
+                <div class="pure-u-2-3">
+                    <p>
+                        This interactive documentation is meant to show the capabilities the Pushjet API has
+                        to offer. It requires javascript for some functions. It is also available in a
+                        raw <a href="/static/js/docs.json">JSON</a> format.
+                    </p>
+                </div>
+                <div class="pure-u-1-3">
+                    <table class="pure-table pure-table-striped" style="cursor:pointer;">
+                        <thead>
+                        <tr>
+                            <th>Table of contents</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr href="#methods">
+                            <td>Methods</td>
+                        </tr>
+                        <tr href="#websockets">
+                            <td>Websockets</td>
+                        </tr>
+                        <tr href="#objects">
+                            <td>Objects</td>
+                        </tr>
+                        <tr href="#types">
+                            <td>Types</td>
+                        </tr>
+                        <tr href="#errors">
+                            <td>Errors</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% include 'docs-methods.html' %}
+            {% include 'docs-objects.html' %}
+            {% include 'docs-types.html' %}
+            {% include 'docs-errors.html' %}
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/highlight.min.js"></script>
+<script src="/static/js/interactive-doc.js"></script>
+</body>
+</html>

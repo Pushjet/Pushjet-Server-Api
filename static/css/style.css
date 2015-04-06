@@ -1,0 +1,152 @@
+body {
+    color: #777;
+}
+
+a {
+    color: #3B8BBA;
+    text-decoration: none;
+}
+
+.pure-img-responsive {
+    max-width: 100%;
+    height: auto;
+}
+
+/*
+This is the parent `<div>` that contains the menu and the content area.
+*/
+#layout {
+    position: relative;
+    padding-left: 0;
+}
+
+#layout.active {
+    position: relative;
+    left: 150px;
+}
+
+/*
+The content `<div>` is where all your content goes.
+*/
+.content {
+    margin: 0 auto;
+    padding: 0 2em;
+    max-width: 1200px;
+    margin-bottom: 50px;
+    line-height: 1.6em;
+}
+
+.header {
+    margin: 0;
+    color: #333;
+    text-align: center;
+    padding: 2.5em 2em 0;
+    border-bottom: 1px solid #eee;
+}
+
+.header h1 {
+    margin: 0.2em 0;
+    font-size: 3em;
+    font-weight: 300;
+}
+
+.header h2 {
+    font-weight: 300;
+    color: #ccc;
+    padding: 0;
+    margin-top: 0;
+}
+
+.content-subhead {
+    margin: 50px 0 20px 0;
+    font-weight: 300;
+    color: #888;
+}
+
+/* -- Responsive Styles (Media Queries) ------------------------------------- */
+
+@media (min-width: 48em) {
+
+    .header,
+    .content {
+        padding-right: 2em;
+    }
+
+    #layout {
+        left: 0;
+    }
+}
+
+/* Code */
+
+pre,
+code {
+    font-family: Consolas, 'Liberation Mono', Courier, monospace;
+    color: #333;
+    background: rgb(250, 250, 250);
+}
+
+code {
+    padding: 0.2em 0.4em;
+    white-space: nowrap;
+}
+
+.content p code {
+    font-size: 90%;
+}
+
+.code {
+    margin-left: -1em;
+    margin-right: -1em;
+    padding: 1em;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #eee;
+}
+
+.code code:hover {
+    overflow-x: auto;
+}
+
+.code code {
+    font-size: 95%;
+    white-space: pre;
+    word-wrap: normal;
+    padding: 0;
+    background: none;
+    overflow-x: hidden;
+}
+
+.code-wrap code {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.code-left {
+    margin-right: 1em;
+}
+
+.code-right {
+    margin-left: 1em;
+}
+
+td input {
+    width: 100%;
+}
+
+table {
+    margin-top: 16px;
+}
+
+input {
+    border-radius: 0 !important;
+}
+
+sup.required {
+    color: red;
+}
+
+button.pure-button {
+    float: right;
+    width: 100%;
+}

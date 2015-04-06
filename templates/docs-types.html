@@ -1,0 +1,26 @@
+<h2 id="types" class="content-subhead">Types</h2>
+<p>
+    There are a couple of types available that are used by the API. These types are all
+    verified through using regular expressions. The API will throw an <a href="#errors">error</a>
+    if the supplied data does not match the requested regex.
+</p>
+<table id="doc-type-table" class="pure-table pure-table-striped">
+    <thead>
+    <tr>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Example</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for t in docs.types.keys() | sort %}
+        <tr id="type-{{ t }}">
+            <td>{{ t }}</td>
+            <td>{{ docs.types[t].description | quickmd | safe }}</td>
+            <td>
+                <a href="http://regex101.com/?regex={{ docs.types[t].regex | urlencode }}&text={{ docs.types[t].example | urlencode }}">{{ docs.types[t].example }}</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,5 @@
+User-agent: * 
+Disallow: /message 
+Disallow: /gcm 
+Disallow: /listen
+Disallow: /service

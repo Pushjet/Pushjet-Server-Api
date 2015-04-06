@@ -1,0 +1,6 @@
+mysql-python
+sqlalchemy
+flask
+flask-sqlalchemy
+flask-limiter
+pyzmq
