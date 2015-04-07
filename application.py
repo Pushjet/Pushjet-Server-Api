@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # coding=utf-8
 from __future__ import unicode_literals
-from flask import Flask, jsonify, redirect, send_from_directory
+from flask import Flask, jsonify, redirect, send_from_directory, request
 from shared import db, limiter, sockets
 from controllers import *
 from utils import Error
@@ -31,8 +31,9 @@ def index():
 
 
 @app.route('/robots.txt')
+@app.route('/favicon.ico')
 def robots_txt():
-    return send_from_directory(app.static_folder, 'robots.txt')
+    return send_from_directory(app.static_folder, request.path[1:])
 
 
 @app.errorhandler(429)
