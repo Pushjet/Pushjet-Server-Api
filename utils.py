@@ -2,7 +2,6 @@ from re import compile
 from flask import request, jsonify
 from functools import wraps
 from models import Service
-from config import zeromq_relay_uri
 from shared import zmq_relay_socket
 
 uuid = compile(r'^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$')
