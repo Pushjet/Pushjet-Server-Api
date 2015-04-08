@@ -12,4 +12,4 @@ limiter = False
 google_api_key = ''
 
 # Message Queueing, this should be the relay
-zeromq_relay_uri = ''
+zeromq_relay_uri = 'ipc:///tmp/pushjet-relay.ipc'
