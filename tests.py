@@ -66,8 +66,8 @@ class PushjetTestCase(unittest.TestCase):
         rv = self.app.get('/listen?uuid=%s' % self.uuid)
         resp = self._failing_loader(rv.data)
         assert 'listens' in resp
-        assert len(resp['listen']) == 1
-        assert resp['listen'][0]['service']['public'] == public
+        assert len(resp['listens']) == 1
+        assert resp['listens'][0]['service']['public'] == public
 
     def test_message_send(self):
         public, secret = self.test_listen_new()
