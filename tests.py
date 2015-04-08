@@ -65,7 +65,7 @@ class PushjetTestCase(unittest.TestCase):
         public, secret = self.test_listen_new()
         rv = self.app.get('/listen?uuid=%s' % self.uuid)
         resp = self._failing_loader(rv.data)
-        assert 'listen' in resp
+        assert 'listens' in resp
         assert len(resp['listen']) == 1
         assert resp['listen'][0]['service']['public'] == public
 
