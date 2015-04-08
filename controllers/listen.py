@@ -30,7 +30,7 @@ def listen_post(client, service):
 @has_uuid
 def listen_get(client):
     listens = Listen.query.filter_by(device=client).all()
-    return jsonify({'listen': [_.as_dict() for _ in listens]})
+    return jsonify({'listens': [_.as_dict() for _ in listens]})
 
 
 @listen.route('/listen', methods=['DELETE'])
