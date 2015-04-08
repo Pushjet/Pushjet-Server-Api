@@ -90,6 +90,13 @@ class PushjetTestCase(unittest.TestCase):
         resp = self._failing_loader(rv.data)
         assert len(resp['messages']) == 0
 
+    def test_message_read(self):
+        self.test_message_send()
+        rv = self.app.delete('/message?uuid=%s' % self.uuid)
+        rv = self.app.get('/message?uuid=%s' % self.uuid)
+        resp = self._failing_loader(rv.data)
+        assert len(resp['messages']) == 0
+
     def test_service_info(self):
         public, secret, name = self.test_service_create()
         rv = self.app.get('/service?service=%s' % public)

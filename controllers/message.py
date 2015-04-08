@@ -52,3 +52,18 @@ def message_recv(client):
     db.session.commit()
 
     return jsonify({'messages': [m.as_dict() for m in msg]})
+
+@message.route('/message', methods=['DELETE'])
+@has_uuid
+def message_read(client):
+    listens = Listen.query.filter_by(device=client).all()
+    if len(listens) > 0:
+        for l in listens:
+            l.timestamp_checked = datetime.utcnow()
+        db.session.commit()
+
+        for l in listens:
+            l.service.cleanup(False)
+        db.session.commit()
+
+    return jsonify(Error.NONE)
