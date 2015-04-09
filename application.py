@@ -2,7 +2,7 @@
 # coding=utf-8
 from __future__ import unicode_literals
 from flask import Flask, jsonify, redirect, send_from_directory, request
-from shared import db, limiter, sockets
+from shared import db, limiter
 from controllers import *
 from utils import Error
 from sys import exit, stderr
@@ -21,7 +21,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
 db.init_app(app)
 limiter.init_app(app)
-sockets.init_app(app)
 limiter.enabled = config.limiter
 
 
