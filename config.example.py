@@ -11,5 +11,6 @@ limiter = False
 # Google Cloud Messaging configuration (required for android!)
 google_api_key = ''
 
-# Message Queueing, this should be the relay
-zeromq_relay_uri = 'ipc:///tmp/pushjet-relay.ipc'
+# Message Queueing, this should be the relay. A "sane" value
+# for this would be something like ipc:///tmp/pushjet-relay.ipc
+zeromq_relay_uri = ''
