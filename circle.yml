@@ -1,0 +1,12 @@
+machine:
+  timezone:
+    Europe/Amsterdam
+  python: 
+    version: 2.7
+
+dependencies:
+  pre:
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS pushjet_api' # Create the database
+    - mysql -e 'SOURCE database.sql' -Dpushjet_api
+    - cp config.example.py config.py # The default config should be fine
+  
