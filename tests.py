@@ -103,6 +103,14 @@ class PushjetTestCase(unittest.TestCase):
         resp = self._failing_loader(rv.data)
         assert len(resp['messages']) == 0
 
+    def test_message_read_multi(self):
+        # Stress test it a bit
+        for _ in range(10):
+            public, secret, msg = self.test_message_send()
+            for __ in range(50):
+                self.test_message_send(public, secret)
+        self.test_message_read()
+
     def test_service_info(self):
         public, secret, name = self.test_service_create()
         rv = self.app.get('/service?service=%s' % public)
