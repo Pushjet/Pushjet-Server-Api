@@ -66,8 +66,9 @@ class PushjetTestCase(unittest.TestCase):
         assert len(resp['listens']) == 1
         assert resp['listens'][0]['service']['public'] == public
 
-    def test_message_send(self):
-        public, secret = self.test_listen_new()
+    def test_message_send(self, public='', secret=''):
+        if not public or not secret:
+            public, secret = self.test_listen_new()
         data = {
             "level": random.randint(0, 5),
             "message": "Test message - %s" % self._random_str(20),
@@ -78,14 +79,22 @@ class PushjetTestCase(unittest.TestCase):
         self._failing_loader(rv.data)
         return public, secret, data
 
-    def test_message_receive(self):
+    def test_message_receive(self, minimum=1):
         self.test_message_send()
         rv = self.app.get('/message?uuid=%s' % self.uuid)
         resp = self._failing_loader(rv.data)
-        assert len(resp['messages']) > 0
+        assert len(resp['messages']) >= minimum
         rv = self.app.get('/message?uuid=%s' % self.uuid)
         resp = self._failing_loader(rv.data)
         assert len(resp['messages']) == 0
+
+    def test_message_receive_multi(self):
+        # Stress test it a bit
+        for _ in range(10):
+            public, secret, msg = self.test_message_send()
+            for __ in range(50):
+                self.test_message_send(public, secret)
+        self.test_message_receive(500)  # We sent at least 500 messages
 
     def test_message_read(self):
         self.test_message_send()
