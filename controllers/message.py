@@ -45,13 +45,14 @@ def message_recv(client):
     for l in listens:
         msg += l.messages().all()
         l.timestamp_checked = datetime.utcnow()
-    db.session.commit()
 
     for l in listens:
         l.service.cleanup(False)
-    db.session.commit()
 
-    return jsonify({'messages': [m.as_dict() for m in msg]})
+    ret = jsonify({'messages': [m.as_dict() for m in msg]})
+    db.session.commit()
+    return ret
+
 
 @message.route('/message', methods=['DELETE'])
 @has_uuid
@@ -60,7 +61,6 @@ def message_read(client):
     if len(listens) > 0:
         for l in listens:
             l.timestamp_checked = datetime.utcnow()
-        db.session.commit()
 
         for l in listens:
             l.service.cleanup(False)
