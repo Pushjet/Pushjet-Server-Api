@@ -92,9 +92,9 @@ class PushjetTestCase(unittest.TestCase):
         # Stress test it a bit
         for _ in range(10):
             public, secret, msg = self.test_message_send()
-            for __ in range(50):
+            for __ in range(5):
                 self.test_message_send(public, secret)
-        self.test_message_receive(500)  # We sent at least 500 messages
+        self.test_message_receive(50)  # We sent at least 50 messages
 
     def test_message_read(self):
         self.test_message_send()
