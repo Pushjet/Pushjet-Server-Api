@@ -2,15 +2,15 @@
 from __future__ import unicode_literals
 from application import app, limiter
 from uuid import uuid4
-import shutil
 import os
 import unittest
 import string
 import random
 import json
+import sys
 
 if not os.path.exists('config.py'):
-    shutil.copy("config.example.py", "config.py")
+    sys.exit('Please copy config.example.py to config.py and configure it')
 import config
 
 
@@ -20,7 +20,7 @@ class PushjetTestCase(unittest.TestCase):
         app.config['TESTING'] = True
         limiter.enabled = False
         self.app = app.test_client()
-        config.google_api_key = config.google_api_key or "PLACEHOLDER"
+        config.google_api_key = config.google_api_key or 'PLACEHOLDER'
 
     def _random_str(self, length=10, append_unicode=True):
         # A random string with the "cupcake" in Japanese appended to it
