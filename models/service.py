@@ -37,8 +37,7 @@ class Service(db.Model):
             .filter(threshold > Message.timestamp_created) \
             .all()
 
-        for msg in messages:
-            db.session.delete(msg)
+        map(db.session.delete, messages)
 
     def listening(self):
         return Listen.query.filter_by(service=self)
