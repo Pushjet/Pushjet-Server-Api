@@ -30,6 +30,7 @@ def message_send(service):
         queue_zmq_message(json_encode({"message": msg.as_dict()}))
 
     service.cleanup()
+    db.session.commit()
     return jsonify(Error.NONE)
 
 
@@ -47,7 +48,7 @@ def message_recv(client):
         l.timestamp_checked = datetime.utcnow()
 
     for l in listens:
-        l.service.cleanup(False)
+        l.service.cleanup()
 
     ret = jsonify({'messages': [m.as_dict() for m in msg]})
     db.session.commit()
@@ -63,7 +64,7 @@ def message_read(client):
             l.timestamp_checked = datetime.utcnow()
 
         for l in listens:
-            l.service.cleanup(False)
+            l.service.cleanup()
         db.session.commit()
 
     return jsonify(Error.NONE)

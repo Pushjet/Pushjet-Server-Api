@@ -28,7 +28,7 @@ class Service(db.Model):
     def __repr__(self):
         return '<Service %r>' % self.name
 
-    def cleanup(self, commit=True):
+    def cleanup(self):
         threshold = self.listening().order_by(Listen.timestamp_checked.asc()).first()
         threshold = datetime(3000, 1, 1) if not threshold else threshold.timestamp_checked
 
@@ -39,8 +39,6 @@ class Service(db.Model):
 
         for msg in messages:
             db.session.delete(msg)
-        if commit:
-            db.session.commit()
 
     def listening(self):
         return Listen.query.filter_by(service=self)
