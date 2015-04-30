@@ -1,12 +1,14 @@
 from flask import Blueprint, jsonify, request
-from utils import Error, is_service, is_secret
-from models import Service
+from utils import Error, is_service, is_secret, has_secret, queue_zmq_message
+from models import Service, Message
 from shared import db
+from json import dumps as json_encode
+from config import zeromq_relay_uri
 
 service = Blueprint('service', __name__)
 
 
-@service.route('/service', methods=["POST"])
+@service.route('/service', methods=['POST'])
 def service_create():
     name = request.form.get('name', '').strip()
     icon = request.form.get('icon', '').strip()
@@ -42,3 +44,29 @@ def service_info():
         return jsonify({"service": srv.as_dict()})
 
     return jsonify(Error.ARGUMENT_MISSING('service'))
+
+
+@service.route('/service', methods=['DELETE'])
+@has_secret
+def service_delete(service):
+    listeners = service.listening().all()
+    messages = Message.query.filter_by(service=service).all()
+
+    # In case we need to send this at a later point
+    # when the listeners have been deleted.
+    if zeromq_relay_uri:
+        send_later = []
+        for l in listeners:
+            send_later.append(json_encode({'listen': l.as_dict()}))
+
+    map(db.session.delete, listeners)  # Delete all listeners
+    map(db.session.delete, messages)  # Delete all messages
+    db.session.delete(service)
+
+    db.session.commit()
+
+    # Notify that the listeners have been deleted
+    if zeromq_relay_uri:
+        map(queue_zmq_message, send_later)
+
+    return jsonify(Error.NONE)

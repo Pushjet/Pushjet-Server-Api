@@ -111,6 +111,24 @@ class PushjetTestCase(unittest.TestCase):
                 self.test_message_send(public, secret)
         self.test_message_read()
 
+    def test_service_delete(self):
+        public, secret = self.test_listen_new()
+        # Send a couple of messages, these should be deleted
+        for _ in range(10):
+            self.test_message_send(public, secret)
+
+        rv = self.app.delete('/service?secret=%s' % secret)
+        self._failing_loader(rv.data)
+
+        # Does the service not exist anymore?
+        rv = self.app.get('/service?service=%s' % public)
+        assert 'error' in json.loads(rv.data)
+
+        # Has the listener been deleted?
+        rv = self.app.get('/listen?uuid=%s' % self.uuid)
+        resp = self._failing_loader(rv.data)
+        assert public not in [l['service']['public'] for l in resp['listens']]
+
     def test_service_info(self):
         public, secret, name = self.test_service_create()
         rv = self.app.get('/service?service=%s' % public)
