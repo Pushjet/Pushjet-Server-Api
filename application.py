@@ -26,7 +26,7 @@ limiter.enabled = config.limiter
 
 @app.route('/')
 def index():
-    return redirect('/docs/')
+    return redirect('http://docs.pushjet.io')
 
 
 @app.route('/robots.txt')
@@ -43,7 +43,6 @@ def limit_rate(e):
 app.register_blueprint(listen)
 app.register_blueprint(message)
 app.register_blueprint(service)
-app.register_blueprint(docs)
 if config.google_api_key is not "":
     app.register_blueprint(gcm)
 
