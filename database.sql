@@ -10,11 +10,11 @@ SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'TRADITIONAL,ALLOW_INVALID_DATES';
 
 
 -- -----------------------------------------------------
--- Table `pushjet_api`.`listen`
+-- Table `pushjet_api`.`subscription`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `pushjet_api`.`listen`;
+DROP TABLE IF EXISTS `pushjet_api`.`subscription`;
 
-CREATE TABLE IF NOT EXISTS `pushjet_api`.`listen` (
+CREATE TABLE IF NOT EXISTS `pushjet_api`.`subscription` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `device`            VARCHAR(40)      NOT NULL,
   `service_id`        INT(10) UNSIGNED NOT NULL,

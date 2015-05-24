@@ -46,29 +46,29 @@ class PushjetTestCase(unittest.TestCase):
         assert 'service' in resp
         return resp['service']['public'], resp['service']['secret'], name
 
-    def test_listen_new(self):
+    def test_subscription_new(self):
         public, secret, name = self.test_service_create()
         data = {"uuid": self.uuid, "service": public}
-        rv = self.app.post('/listen', data=data)
+        rv = self.app.post('/subscription', data=data)
         self._failing_loader(rv.data)
         return public, secret
 
-    def test_listen_delete(self):
-        public, secret = self.test_listen_new()
-        rv = self.app.delete('/listen?uuid=%s&service=%s' % (self.uuid, public))
+    def test_subscription_delete(self):
+        public, secret = self.test_subscription_new()
+        rv = self.app.delete('/subscription?uuid=%s&service=%s' % (self.uuid, public))
         self._failing_loader(rv.data)
 
-    def test_listen_list(self):
-        public, secret = self.test_listen_new()
-        rv = self.app.get('/listen?uuid=%s' % self.uuid)
+    def test_subscription_list(self):
+        public, secret = self.test_subscription_new()
+        rv = self.app.get('/subscription?uuid=%s' % self.uuid)
         resp = self._failing_loader(rv.data)
-        assert 'listens' in resp
-        assert len(resp['listens']) == 1
-        assert resp['listens'][0]['service']['public'] == public
+        assert 'subscriptions' in resp
+        assert len(resp['subscriptions']) == 1
+        assert resp['subscriptions'][0]['service']['public'] == public
 
     def test_message_send(self, public='', secret=''):
         if not public or not secret:
-            public, secret = self.test_listen_new()
+            public, secret = self.test_subscription_new()
         data = {
             "level": random.randint(0, 5),
             "message": "Test message - %s" % self._random_str(20),
@@ -112,7 +112,7 @@ class PushjetTestCase(unittest.TestCase):
         self.test_message_read()
 
     def test_service_delete(self):
-        public, secret = self.test_listen_new()
+        public, secret = self.test_subscription_new()
         # Send a couple of messages, these should be deleted
         for _ in range(10):
             self.test_message_send(public, secret)
@@ -124,10 +124,10 @@ class PushjetTestCase(unittest.TestCase):
         rv = self.app.get('/service?service=%s' % public)
         assert 'error' in json.loads(rv.data)
 
-        # Has the listener been deleted?
-        rv = self.app.get('/listen?uuid=%s' % self.uuid)
+        # Has the subscriptioner been deleted?
+        rv = self.app.get('/subscription?uuid=%s' % self.uuid)
         resp = self._failing_loader(rv.data)
-        assert public not in [l['service']['public'] for l in resp['listens']]
+        assert public not in [l['service']['public'] for l in resp['subscriptions']]
 
     def test_service_info(self):
         public, secret, name = self.test_service_create()

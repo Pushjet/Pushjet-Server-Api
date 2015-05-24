@@ -23,7 +23,7 @@ class Error(object):
     INVALID_CLIENT = _e.__func__('Invalid client uuid', 1)
     INVALID_SERVICE = _e.__func__('Invalid service', 2)
     INVALID_SECRET = _e.__func__('Invalid secret', 3)
-    DUPLICATE_LISTEN = _e.__func__('Already listening to that service', 4)
+    DUPLICATE_LISTEN = _e.__func__('Already subscribed to that service', 4)
     RATE_TOOFAST = _e.__func__('Whoaw there cowboy, slow down!', 5)
     SERVICE_NOTFOUND = _e.__func__('Service not found', 6)
     CONNECTION_CLOSING = _e.__func__('Connection closing', 7)

@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from utils import Error, has_uuid, has_secret, queue_zmq_message, QUERY_ACTION_NEW_MESSAGE
 from shared import db, limiter
-from models import Listen, Message, Gcm
+from models import Subscription, Message, Gcm
 from datetime import datetime
 from config import zeromq_relay_uri, google_api_key
 from json import dumps as json_encode
@@ -38,16 +38,16 @@ def message_send(service):
 @limiter.limit('15 per minute')
 @has_uuid
 def message_recv(client):
-    listens = Listen.query.filter_by(device=client).all()
-    if len(listens) == 0:
+    subscriptions = Subscription.query.filter_by(device=client).all()
+    if len(subscriptions) == 0:
         return jsonify({'messages': []})
 
     msg = []
-    for l in listens:
+    for l in subscriptions:
         msg += l.messages().all()
         l.timestamp_checked = datetime.utcnow()
 
-    for l in listens:
+    for l in subscriptions:
         l.service.cleanup()
 
     ret = jsonify({'messages': [m.as_dict() for m in msg]})
@@ -58,12 +58,12 @@ def message_recv(client):
 @message.route('/message', methods=['DELETE'])
 @has_uuid
 def message_read(client):
-    listens = Listen.query.filter_by(device=client).all()
-    if len(listens) > 0:
-        for l in listens:
+    subscriptions = Subscription.query.filter_by(device=client).all()
+    if len(subscriptions) > 0:
+        for l in subscriptions:
             l.timestamp_checked = datetime.utcnow()
 
-        for l in listens:
+        for l in subscriptions:
             l.service.cleanup()
         db.session.commit()
 

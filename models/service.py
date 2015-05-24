@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.dialects.mysql import INTEGER
 import hashlib
 from os import urandom
-from .listen import Listen
+from .subscription import Subscription
 from .message import Message
 
 
@@ -29,7 +29,7 @@ class Service(db.Model):
         return '<Service %r>' % self.name
 
     def cleanup(self):
-        threshold = self.listening().order_by(Listen.timestamp_checked.asc()).first()
+        threshold = self.subscribed().order_by(Subscription.timestamp_checked.asc()).first()
         threshold = datetime(3000, 1, 1) if not threshold else threshold.timestamp_checked
 
         messages = Message.query \
@@ -39,8 +39,8 @@ class Service(db.Model):
 
         map(db.session.delete, messages)
 
-    def listening(self):
-        return Listen.query.filter_by(service=self)
+    def subscribed(self):
+        return Subscription.query.filter_by(service=self)
 
     def as_dict(self, secret=False):
         data = {

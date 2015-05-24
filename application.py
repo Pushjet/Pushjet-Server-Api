@@ -40,7 +40,7 @@ def limit_rate(e):
     return jsonify(Error.RATE_TOOFAST)
 
 
-app.register_blueprint(listen)
+app.register_blueprint(subscription)
 app.register_blueprint(message)
 app.register_blueprint(service)
 if config.google_api_key is not "":

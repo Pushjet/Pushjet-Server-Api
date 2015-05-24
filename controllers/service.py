@@ -49,23 +49,23 @@ def service_info():
 @service.route('/service', methods=['DELETE'])
 @has_secret
 def service_delete(service):
-    listeners = service.listening().all()
+    subscriptions = service.subscribed().all()
     messages = Message.query.filter_by(service=service).all()
 
     # In case we need to send this at a later point
-    # when the listeners have been deleted.
+    # when the subscriptions have been deleted.
     if zeromq_relay_uri:
         send_later = []
-        for l in listeners:
-            send_later.append(json_encode({'listen': l.as_dict()}))
+        for l in subscriptions:
+            send_later.append(json_encode({'subscription': l.as_dict()}))
 
-    map(db.session.delete, listeners)  # Delete all listeners
+    map(db.session.delete, subscriptions)  # Delete all subscriptions
     map(db.session.delete, messages)  # Delete all messages
     db.session.delete(service)
 
     db.session.commit()
 
-    # Notify that the listeners have been deleted
+    # Notify that the subscriptions have been deleted
     if zeromq_relay_uri:
         map(queue_zmq_message, send_later)
 

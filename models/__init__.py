@@ -1,4 +1,4 @@
 from .service import Service
 from .message import Message
-from .listen import Listen
+from .subscription import Subscription
 from .gcm import Gcm

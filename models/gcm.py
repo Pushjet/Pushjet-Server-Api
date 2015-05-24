@@ -4,7 +4,7 @@ from json import dumps
 from sqlalchemy.dialects.mysql import INTEGER
 from datetime import datetime
 from config import google_api_key
-from models import Listen, Message
+from models import Subscription, Message
 
 gcm_url = 'https://android.googleapis.com/gcm/send'
 
@@ -36,10 +36,10 @@ class Gcm(db.Model):
 
         :type message: Message
         """
-        listeners = Listen.query.filter_by(service=message.service).all()
-        if len(listeners) == 0:
+        subscriptions = Subscription.query.filter_by(service=message.service).all()
+        if len(subscriptions) == 0:
             return 0
-        gcm_filter = Gcm.query.filter(Gcm.uuid.in_([l.device for l in listeners]))
+        gcm_filter = Gcm.query.filter(Gcm.uuid.in_([l.device for l in subscriptions]))
         registration_ids = [g.gcmid for g in gcm_filter.all()]
         if len(registration_ids) > 0:
             data = dumps({
@@ -53,8 +53,8 @@ class Gcm(db.Model):
             req = urllib2.Request('https://android.googleapis.com/gcm/send', data, headers)
             urllib2.urlopen(req).read()
             uuids = [g.uuid for g in gcm_filter.all()]
-            gcm_listens = Listen.query.filter_by(service=message.service).filter(Listen.device.in_(uuids)).all()
-            for l in gcm_listens:
+            gcm_subscriptions = Subscription.query.filter_by(service=message.service).filter(Subscription.device.in_(uuids)).all()
+            for l in gcm_subscriptions:
                 l.timestamp_checked = datetime.utcnow()
             db.session.commit()
         return len(registration_ids)
