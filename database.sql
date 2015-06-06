@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `pushjet_api`.`gcm` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `uuid`              VARCHAR(40)      NOT NULL,
   `gcmid`             TEXT             NOT NULL,
+  `pubkey`            TEXT             DEFAULT NULL,
   `timestamp_created` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 )
