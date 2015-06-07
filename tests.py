@@ -47,7 +47,7 @@ class PushjetTestCase(unittest.TestCase):
             "name": name,
             "icon": "http://i.imgur.com/%s.png" % self._random_str(7, False)
         }
-        rv = self.app.post('/service', data=data).json()
+        rv = json.loads(self.app.post('/service', data=data).data)
         assert 'service' in rv
         return rv['service']['public'], rv['service']['secret'], name
 
@@ -127,7 +127,7 @@ class PushjetTestCase(unittest.TestCase):
 
         # Does the service not exist anymore?
         rv = self.app.get('/service?service=%s' % public)
-        assert 'error' in rv.json()
+        assert 'error' in json.loads(rv.data)
 
         # Has the subscriptioner been deleted?
         rv = self.app.get('/subscription?uuid=%s' % self.uuid)
@@ -153,17 +153,17 @@ class PushjetTestCase(unittest.TestCase):
         assert srv['public'] == public
 
     def test_uuid_regex(self):
-        rv = self.app.get('/service?service=%s' % self._random_str(20))
-        assert 'error' in rv.json()
+        rv = self.app.get('/service?service=%s' % self._random_str(20)).data
+        assert 'error' in json.loads(rv)
 
     def test_service_regex(self):
-        rv = self.app.get('/message?uuid=%s' % self._random_str(20))
-        assert 'error' in rv.json()
+        rv = self.app.get('/message?uuid=%s' % self._random_str(20)).data
+        assert 'error' in json.loads(rv)
 
     def test_missing_arg(self):
-        rv = self.app.get('/message').json()
+        rv = json.loads(self.app.get('/message').data)
         assert 'error' in rv and rv['error']['id'] is 7
-        rv = self.app.get('/service').json()
+        rv = json.loads(self.app.get('/service').data)
         assert 'error' in rv and rv['error']['id'] is 7
 
     def test_gcm_register(self):
@@ -190,9 +190,17 @@ class PushjetTestCase(unittest.TestCase):
             'pubkey': b64encode(self._random_str(40, False))
         }
 
-        sys.stderr.write(json.dumps(data))
         rv = json.loads(self.app.post('/gcm', data=data).data)
         assert 'error' in rv and rv['error']['id'] is 8
+
+    def test_gcm_unregister(self):
+        self.test_gcm_register()
+        rv = self.app.delete('/gcm', data={'uuid': self.uuid}).data
+        self._failing_loader(rv)
+
+    def test_gcm_register_double(self):
+        self.test_gcm_register()
+        self.test_gcm_register()
 
 
 
