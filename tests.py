@@ -1,13 +1,15 @@
 # coding=utf-8
 from __future__ import unicode_literals
-from application import app, limiter
 from uuid import uuid4
+from base64 import b64encode
 import os
 import unittest
 import string
 import random
 import json
 import sys
+import rsa
+
 
 if not os.path.exists('config.py'):
     sys.exit('Please copy config.example.py to config.py and configure it')
@@ -16,16 +18,20 @@ import config
 
 class PushjetTestCase(unittest.TestCase):
     def setUp(self):
+        config.google_api_key = config.google_api_key or 'PLACEHOLDER'
+        from application import app, limiter
         self.uuid = str(uuid4())
         app.config['TESTING'] = True
         limiter.enabled = False
         self.app = app.test_client()
-        config.google_api_key = config.google_api_key or 'PLACEHOLDER'
 
     def _random_str(self, length=10, append_unicode=True):
         # A random string with the "cupcake" in Japanese appended to it
-        return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length)) \
-               + (u'カップケーキ' if append_unicode else '')
+        random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
+        if append_unicode:
+            random_str += u'カップケーキ'
+
+        return random_str
 
     def _failing_loader(self, s):
         data = json.loads(s)
@@ -41,10 +47,9 @@ class PushjetTestCase(unittest.TestCase):
             "name": name,
             "icon": "http://i.imgur.com/%s.png" % self._random_str(7, False)
         }
-        rv = self.app.post('/service', data=data)
-        resp = json.loads(rv.data)
-        assert 'service' in resp
-        return resp['service']['public'], resp['service']['secret'], name
+        rv = self.app.post('/service', data=data).json()
+        assert 'service' in rv
+        return rv['service']['public'], rv['service']['secret'], name
 
     def test_subscription_new(self):
         public, secret, name = self.test_service_create()
@@ -122,7 +127,7 @@ class PushjetTestCase(unittest.TestCase):
 
         # Does the service not exist anymore?
         rv = self.app.get('/service?service=%s' % public)
-        assert 'error' in json.loads(rv.data)
+        assert 'error' in rv.json()
 
         # Has the subscriptioner been deleted?
         rv = self.app.get('/subscription?uuid=%s' % self.uuid)
@@ -149,20 +154,46 @@ class PushjetTestCase(unittest.TestCase):
 
     def test_uuid_regex(self):
         rv = self.app.get('/service?service=%s' % self._random_str(20))
-        assert 'error' in json.loads(rv.data)
+        assert 'error' in rv.json()
 
     def test_service_regex(self):
         rv = self.app.get('/message?uuid=%s' % self._random_str(20))
-        assert 'error' in json.loads(rv.data)
+        assert 'error' in rv.json()
 
     def test_missing_arg(self):
-        rv = self.app.get('/message')
-        assert 'error' in json.loads(rv.data) and '7' in rv.data
-        rv = self.app.get('/service')
-        assert 'error' in json.loads(rv.data) and '7' in rv.data
+        rv = self.app.get('/message').json()
+        assert 'error' in rv and rv['error']['id'] is 7
+        rv = self.app.get('/service').json()
+        assert 'error' in rv and rv['error']['id'] is 7
 
     def test_gcm_register(self):
-        self.app.post('/gcm', data={'uuid': self.uuid, 'regId': self._random_str(40)})
+        data = {'uuid': self.uuid, 'regId': self._random_str(40)}
+        rv = self.app.post('/gcm', data=data).data
+        self._failing_loader(rv)
+
+    def test_gcm_register_crypto(self):
+        (public, private) = rsa.newkeys(512)
+        pubkey = b64encode(public.save_pkcs1('DER'))
+
+        data = {
+            'uuid': self.uuid,
+            'regId': self._random_str(40),
+            'pubkey': pubkey
+        }
+
+        self._failing_loader(self.app.post('/gcm', data=data).data)
+
+    def test_gcm_register_crypto_failing(self):
+        data = {
+            'uuid': self.uuid,
+            'regId': self._random_str(40),
+            'pubkey': b64encode(self._random_str(40, False))
+        }
+
+        sys.stderr.write(json.dumps(data))
+        rv = json.loads(self.app.post('/gcm', data=data).data)
+        assert 'error' in rv and rv['error']['id'] is 8
+
 
 
 if __name__ == '__main__':

@@ -18,7 +18,7 @@ def gcm_register(client):
         try:
             rsa.PublicKey.load_pkcs1(b64decode(pubkey_b64), 'DER')
         except:
-            return Error.INVALID_PUBKEY
+            return jsonify(Error.INVALID_PUBKEY)
 
     if not registration:
         return Error.ARGUMENT_MISSING('regid')
