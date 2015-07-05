@@ -25,7 +25,7 @@ class Message(db.Model):
 
     def as_dict(self):
         return {
-            "service": self.service.as_dict(),
+            "service": self.service.public,
             "message": self.text,
             "title": self.title,
             "link": self.link,
