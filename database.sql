@@ -12,7 +12,7 @@ SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Table `pushjet_api`.`subscription`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `pushjet_api`.`subscription`;
+DROP TABLE IF EXISTS `subscription`;
 
 CREATE TABLE IF NOT EXISTS `pushjet_api`.`subscription` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `pushjet_api`.`subscription` (
 -- -----------------------------------------------------
 -- Table `pushjet_api`.`message`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `pushjet_api`.`message`;
+DROP TABLE IF EXISTS `message`;
 
 CREATE TABLE IF NOT EXISTS `pushjet_api`.`message` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `pushjet_api`.`message` (
 -- -----------------------------------------------------
 -- Table `pushjet_api`.`service`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `pushjet_api`.`service`;
+DROP TABLE IF EXISTS `service`;
 
 CREATE TABLE IF NOT EXISTS `pushjet_api`.`service` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `pushjet_api`.`service` (
 -- -----------------------------------------------------
 -- Table `pushjet_api`.`gcm`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `pushjet_api`.`gcm`;
+DROP TABLE IF EXISTS `gcm`;
 
 CREATE TABLE IF NOT EXISTS `pushjet_api`.`gcm` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
