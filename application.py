@@ -2,9 +2,6 @@
 # coding=utf-8
 from __future__ import unicode_literals
 from flask import Flask, jsonify, redirect, send_from_directory, request
-from shared import db, limiter
-from controllers import *
-from utils import Error
 from sys import exit, stderr
 
 try:
@@ -12,6 +9,10 @@ try:
 except ImportError:
     stderr.write("Please copy config.example.py to config.py and edit the file.")
     exit(1)
+
+from shared import db, limiter
+from controllers import *
+from utils import Error
 
 if config.google_api_key == '':
     stderr.write("GCM disabled, please enter the google api key for gcm")
