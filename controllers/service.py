@@ -54,8 +54,8 @@ def service_delete(service):
 
     # In case we need to send this at a later point
     # when the subscriptions have been deleted.
+    send_later = []
     if zeromq_relay_uri:
-        send_later = []
         for l in subscriptions:
             send_later.append(json_encode({'subscription': l.as_dict()}))
 
@@ -68,5 +68,20 @@ def service_delete(service):
     # Notify that the subscriptions have been deleted
     if zeromq_relay_uri:
         map(queue_zmq_message, send_later)
+
+    return jsonify(Error.NONE)
+
+
+@service.route('/service', methods=['PATCH'])
+@has_secret
+def service_patch(service):
+    fields = ['name', 'icon']
+
+    for field in fields:
+        data = request.form.get(field, '').strip()
+        if data is not '':
+            setattr(service, field, data)
+
+    db.session.commit()
 
     return jsonify(Error.NONE)

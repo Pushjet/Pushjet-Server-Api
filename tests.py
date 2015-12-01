@@ -37,7 +37,7 @@ class PushjetTestCase(unittest.TestCase):
         data = json.loads(s)
         if 'error' in data:
             err = data['error']
-            print "Got an unexpected error, [%i] %s" % (err['id'], err['message'])
+            print("Got an unexpected error, [%i] %s" % (err['id'], err['message']))
             assert False
         return data
 
@@ -152,6 +152,21 @@ class PushjetTestCase(unittest.TestCase):
         assert srv['name'] == name
         assert srv['public'] == public
 
+    def test_service_update(self):
+        public, secret, name = self.test_service_create()
+        data = {
+            "name": self._random_str(10),
+            "icon": "http://i.imgur.com/%s.png" % self._random_str(7, False)
+        }
+        rv = self.app.patch('/service?secret=%s' % secret, data=data).data
+        self._failing_loader(rv)
+
+        # Test if patched
+        rv = self.app.get('/service?service=%s' % public)
+        rv = self._failing_loader(rv.data)['service']
+        for key in data.keys():
+            assert data[key] == rv[key]
+
     def test_uuid_regex(self):
         rv = self.app.get('/service?service=%s' % self._random_str(20)).data
         assert 'error' in json.loads(rv)
@@ -201,7 +216,6 @@ class PushjetTestCase(unittest.TestCase):
     def test_gcm_register_double(self):
         self.test_gcm_register()
         self.test_gcm_register()
-
 
 
 if __name__ == '__main__':
