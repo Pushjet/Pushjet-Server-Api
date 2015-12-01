@@ -25,6 +25,8 @@ class PushjetTestCase(unittest.TestCase):
         limiter.enabled = False
         self.app = app.test_client()
 
+        setattr(self.app.response_wrapper, 'data', property(lambda self: self.get_data(True)))
+
     def _random_str(self, length=10, append_unicode=True):
         # A random string with the "cupcake" in Japanese appended to it
         random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
@@ -37,7 +39,7 @@ class PushjetTestCase(unittest.TestCase):
         data = json.loads(s)
         if 'error' in data:
             err = data['error']
-            print "Got an unexpected error, [%i] %s" % (err['id'], err['message'])
+            print("Got an unexpected error, [{id}] {message}".format(id=err['id'], message=err['message']))
             assert False
         return data
 
@@ -187,7 +189,17 @@ class PushjetTestCase(unittest.TestCase):
         data = {
             'uuid': self.uuid,
             'regId': self._random_str(40),
-            'pubkey': b64encode(self._random_str(40, False))
+            'pubkey': b64encode(self._random_str(40, False).encode('utf-8')),
+        }
+
+        rv = json.loads(self.app.post('/gcm', data=data).data)
+        assert 'error' in rv and rv['error']['id'] is 8
+
+    def test_gcm_register_crypto_failing_invalid_base(self):
+        data = {
+            'uuid': self.uuid,
+            'regId': self._random_str(40),
+            'pubkey': self._random_str(40, False),
         }
 
         rv = json.loads(self.app.post('/gcm', data=data).data)
@@ -201,7 +213,6 @@ class PushjetTestCase(unittest.TestCase):
     def test_gcm_register_double(self):
         self.test_gcm_register()
         self.test_gcm_register()
-
 
 
 if __name__ == '__main__':

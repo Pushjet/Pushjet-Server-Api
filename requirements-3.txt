@@ -1,0 +1,7 @@
+sqlalchemy
+flask
+flask-sqlalchemy
+flask-limiter
+pyzmq
+rsa
+requests

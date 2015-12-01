@@ -16,7 +16,7 @@ class Service(db.Model):
     timestamp_created = db.Column(db.TIMESTAMP, default=datetime.utcnow)
 
     def __init__(self, name, icon=''):
-        self.secret = hashlib.sha1(urandom(100)).hexdigest()[:32]
+        self.secret = hashlib.sha1(urandom(100)).hexdigest()[:32].encode('ascii')
         self.name = name
         self.icon = icon
         pub = list(hashlib.new('ripemd160', self.secret).hexdigest())[:40]
@@ -26,7 +26,7 @@ class Service(db.Model):
         self.public = ''.join(pub)
 
     def __repr__(self):
-        return '<Service %r>' % self.name
+        return '<Service {}>'.format(self.name)
 
     def cleanup(self):
         threshold = self.subscribed().order_by(Subscription.timestamp_checked.asc()).first()
@@ -37,7 +37,8 @@ class Service(db.Model):
             .filter(threshold > Message.timestamp_created) \
             .all()
 
-        map(db.session.delete, messages)
+        for message in messages:
+            db.session.delete(message)
 
     def subscribed(self):
         return Subscription.query.filter_by(service=self)

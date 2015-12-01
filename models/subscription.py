@@ -18,7 +18,7 @@ class Subscription(db.Model):
         self.timestamp_checked = datetime.utcnow() - timedelta(minutes=30)
 
     def __repr__(self):
-        return '<Subscription %r>' % self.id
+        return '<Subscription {}>'.format(self.id)
 
     def messages(self):
         return Message.query \

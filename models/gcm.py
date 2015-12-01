@@ -1,5 +1,5 @@
 import rsa
-import urllib2
+import requests
 from shared import db
 from base64 import b64decode
 from json import dumps
@@ -24,7 +24,7 @@ class Gcm(db.Model):
         self.pubkey = pubkey
 
     def __repr__(self):
-        return '<Gcm %r>' % self.uuid
+        return '<Gcm {}>'.format(self.uuid)
 
     def as_dict(self):
         data = {
@@ -68,13 +68,13 @@ class Gcm(db.Model):
 
     @staticmethod
     def gcm_send(ids, data):
-        data = dumps({
+        data = {
             "registration_ids": ids,
             "data": data,
-        })
+        }
         headers = {
             'Authorization': 'key=%s' % google_api_key,
             'Content-Type': 'application/json',
         }
-        req = urllib2.Request('https://android.googleapis.com/gcm/send', data, headers)
-        urllib2.urlopen(req).read()
+
+        requests.post(gcm_url, data=data, headers=headers)

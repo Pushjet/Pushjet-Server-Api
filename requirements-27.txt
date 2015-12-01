@@ -5,3 +5,4 @@ flask-sqlalchemy
 flask-limiter
 pyzmq
 rsa
+requests
