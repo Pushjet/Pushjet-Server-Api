@@ -3,6 +3,8 @@ machine:
     Europe/Amsterdam
   python: 
     version: 2.7
+    version: 3.4
+    version: 3.3.6
 
 dependencies:
   pre:
