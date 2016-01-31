@@ -2,9 +2,7 @@ machine:
   timezone:
     Europe/Amsterdam
   python: 
-    version: 
-      - 2.7 
-      - pypy-2.5.0
+    version: 2.7 
 
 dependencies:
   pre:
