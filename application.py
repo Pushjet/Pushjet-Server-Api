@@ -20,6 +20,7 @@ if config.google_api_key == '':
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False;
 db.init_app(app)
 limiter.init_app(app)
 limiter.enabled = config.limiter
