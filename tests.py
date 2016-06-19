@@ -30,7 +30,9 @@ class PushjetTestCase(unittest.TestCase):
         random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
         if append_unicode:
             random_str += u'カップケーキ'
-
+        
+        # Always make sure that there is some unicode in there
+        random_str[length//2] = '☕'
         return random_str
 
     def _failing_loader(self, s):
