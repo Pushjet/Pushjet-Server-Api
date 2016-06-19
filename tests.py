@@ -27,9 +27,9 @@ class PushjetTestCase(unittest.TestCase):
 
     def _random_str(self, length=10, append_unicode=True):
         # A random string with the "cupcake" in Japanese appended to it
+        # Always make sure that there is some unicode in there
         random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length//2)) \
-                     + '☕' \  # Always make sure that there is some unicode in there
-                     + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length - length//2))
+                     + u'☕' + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length - length//2))
         
         if append_unicode:
             random_str += u'カップケーキ'

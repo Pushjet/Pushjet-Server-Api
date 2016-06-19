@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS `pushjet_api`.`gcm` (
   `gcmid`             TEXT             NOT NULL,
   `pubkey`            TEXT             DEFAULT NULL,
   `timestamp_created` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `rsa_pub`           BLOB(1024)       DEFAULT NULL,
   PRIMARY KEY (`id`)
 )
   ENGINE = InnoDB
