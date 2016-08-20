@@ -16,7 +16,8 @@ class Subscription(db.Model):
     def __init__(self, device, service):
         self.device = device
         self.service = service
-        self.timestamp_checked = datetime.utcnow() - timedelta(minutes=30)
+        self.timestamp_checked = datetime.utcnow()
+        self.last_read = Message.query.order_by(Message.id.desc()).first().id
 
     def __repr__(self):
         return '<Subscription %r>' % self.id
