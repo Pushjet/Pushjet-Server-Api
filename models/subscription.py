@@ -14,10 +14,12 @@ class Subscription(db.Model):
     timestamp_checked = db.Column(db.TIMESTAMP)
 
     def __init__(self, device, service):
+        last_message = Message.query.order_by(Message.id.desc()).first()
+
         self.device = device
         self.service = service
         self.timestamp_checked = datetime.utcnow()
-        self.last_read = Message.query.order_by(Message.id.desc()).first().id
+        self.last_read = last_message.id if last_message else 0
 
     def __repr__(self):
         return '<Subscription %r>' % self.id

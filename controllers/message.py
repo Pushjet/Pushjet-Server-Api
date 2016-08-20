@@ -62,10 +62,10 @@ def message_recv(client):
 def message_read(client):
     subscriptions = Subscription.query.filter_by(device=client).all()
     if len(subscriptions) > 0:
-        last_message_id = Message.query.order_by(Message.id.desc()).first().id
+        last_message = Message.query.order_by(Message.id.desc()).first()
         for l in subscriptions:
             l.timestamp_checked = datetime.utcnow()
-            l.last_read = last_message_id
+            l.last_read = last_message.id if last_message else 0
 
         for l in subscriptions:
             l.service.cleanup()
