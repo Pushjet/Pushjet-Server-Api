@@ -24,7 +24,7 @@ class Subscription(db.Model):
     def messages(self):
         return Message.query \
             .filter_by(service_id=self.service_id) \
-            .filter(Message.timestamp_created > self.timestamp_checked)
+            .filter(Message.id > self.last_read)
 
     def as_dict(self):
         data = {
