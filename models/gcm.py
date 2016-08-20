@@ -15,13 +15,11 @@ class Gcm(db.Model):
     id = db.Column(INTEGER(unsigned=True), primary_key=True)
     uuid = db.Column(db.VARCHAR(40), nullable=False)
     gcmid = db.Column(db.TEXT, nullable=False)
-    pubkey = db.Column(db.TEXT, default=None)
     timestamp_created = db.Column(db.TIMESTAMP, default=datetime.utcnow)
 
-    def __init__(self, device, gcmid, pubkey=None):
+    def __init__(self, device, gcmid):
         self.uuid = device
         self.gcmid = gcmid
-        self.pubkey = pubkey
 
     def __repr__(self):
         return '<Gcm %r>' % self.uuid
@@ -46,17 +44,10 @@ class Gcm(db.Model):
         gcm_filter = Gcm.query.filter(Gcm.uuid.in_([l.device for l in subscriptions])).all()
 
         devices_plain = [r.gcmid for r in gcm_filter if r.pubkey is None]
-        devices_crypto = [r for r in gcm_filter if r.pubkey is not None]
 
         if len(devices_plain) > 0:
-            data = {"message": dumps(message.as_dict()), "encrypted": True}
+            data = {"message": dumps(message.as_dict()), "encrypted": False}
             Gcm.gcm_send(devices_plain, data)
-        for device in devices_crypto:
-            pubkey = rsa.PublicKey.load_pkcs1(b64decode(device.pubkey), 'DER')
-            message_enc = rsa.encrypt(dumps(message.as_dict()), pubkey)
-
-            data = {"message": message_enc, "encrypted": True}
-            Gcm.gcm_send([device.gcmid], data)
 
         if len(gcm_filter) > 0:
             uuids = [g.uuid for g in gcm_filter]

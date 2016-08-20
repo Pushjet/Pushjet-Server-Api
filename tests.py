@@ -8,8 +8,6 @@ import string
 import random
 import json
 import sys
-import rsa
-
 
 if not os.path.exists('config.py'):
     sys.exit('Please copy config.example.py to config.py and configure it')
@@ -192,49 +190,6 @@ class PushjetTestCase(unittest.TestCase):
         data = {'uuid': self.uuid, 'regId': self._random_str(40)}
         rv = self.app.post('/gcm', data=data).data
         self._failing_loader(rv)
-
-    def test_gcm_register_crypto(self):
-        (public, private) = rsa.newkeys(512)
-        pubkey = b64encode(public.save_pkcs1('DER'))
-        reg_id = self._random_str(40)
-
-        data = {
-            'uuid': self.uuid,
-            'regId': reg_id,
-            'pubkey': pubkey
-        }
-
-        self._failing_loader(self.app.post('/gcm', data=data).data)
-        return private, reg_id
-
-    def test_gcm_register_crypto_failing(self):
-        public = self._random_str(40, unicode=False)
-
-        data = {
-            'uuid': self.uuid,
-            'regId': self._random_str(40),
-            'pubkey': b64encode(public)
-        }
-
-        rv = json.loads(self.app.post('/gcm', data=data).data)
-        assert 'error' in rv
-        assert rv['error']['id'] is 8
-
-    def test_crypto_gcm(self):
-        (private, reg_id) = self.test_gcm_register_crypto()
-        (public, secret, data) = self.test_message_send()
-
-        messages = [gcm['data'] for gcm in self.gcm
-                    if gcm['registration_ids'][0] == reg_id and len(gcm['registration_ids']) == 1]
-        assert len(messages) == 1
-
-        message_enc = self._failing_loader(messages[0])
-        assert message_enc['encrypted'] is True
-        message_dec = str(rsa.decrypt(message_enc, private))
-        message = json.loads(message_dec)
-
-        for key in data.keys():
-            assert data[key] == message[key]
 
     def test_gcm_unregister(self):
         self.test_gcm_register()
