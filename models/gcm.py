@@ -52,8 +52,10 @@ class Gcm(db.Model):
         if len(gcm_filter) > 0:
             uuids = [g.uuid for g in gcm_filter]
             gcm_subscriptions = Subscription.query.filter_by(service=message.service).filter(Subscription.device.in_(uuids)).all()
+            last_message = Message.query.order_by(Message.id.desc()).first()
             for l in gcm_subscriptions:
                 l.timestamp_checked = datetime.utcnow()
+                l.last_read = last_message.last_read if last_message else 0
             db.session.commit()
         return len(gcm_filter)
 
