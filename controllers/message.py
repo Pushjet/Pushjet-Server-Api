@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from utils import Error, has_uuid, has_secret, queue_zmq_message
+from utils import Error, has_uuid, has_secret, queue_zmq_message, QUERY_ACTION_NEW_MESSAGE
 from shared import db, limiter
 from models import Subscription, Message, Gcm
 from datetime import datetime
@@ -47,10 +47,11 @@ def message_recv(client):
         msg += l.messages().all()
         l.timestamp_checked = datetime.utcnow()
 
-    ret = jsonify({'messages': [m.as_dict() for m in msg]})
-    map(db.session.delete, msg)
-    db.session.commit()
+    for l in subscriptions:
+        l.service.cleanup()
 
+    ret = jsonify({'messages': [m.as_dict() for m in msg]})
+    db.session.commit()
     return ret
 
 
