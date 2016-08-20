@@ -37,6 +37,12 @@ def robots_txt():
     return send_from_directory(app.static_folder, request.path[1:])
 
 
+@app.route('/version')
+def version():
+    with open('.git/refs/heads/master', 'r') as f:
+        return f.read(7)
+
+
 @app.errorhandler(429)
 def limit_rate(e):
     return jsonify(Error.RATE_TOOFAST)
