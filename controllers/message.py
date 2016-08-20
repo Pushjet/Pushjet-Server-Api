@@ -47,11 +47,10 @@ def message_recv(client):
         msg += l.messages().all()
         l.timestamp_checked = datetime.utcnow()
 
-    for l in subscriptions:
-        l.service.cleanup()
-
     ret = jsonify({'messages': [m.as_dict() for m in msg]})
+    map(db.session.delete, msg)
     db.session.commit()
+
     return ret
 
 
