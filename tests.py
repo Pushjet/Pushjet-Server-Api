@@ -29,14 +29,14 @@ class PushjetTestCase(unittest.TestCase):
         limiter.enabled = False
         self.app = app.test_client()
 
-    def _random_str(self, length=10, append_unicode=True):
+    def _random_str(self, length=10, unicode=True):
         # A random string with the "cupcake" in Japanese appended to it
         # Always make sure that there is some unicode in there
-        random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length//2)) \
-                     + u'☕' + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length - length//2))
-        
-        if append_unicode:
-            random_str += u'カップケーキ'
+        random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
+
+        if unicode:
+            random_str = random_str[:-7] + u'カップケーキ'
+            random_str = u'☕' + random_str
 
         return random_str
 
@@ -208,10 +208,12 @@ class PushjetTestCase(unittest.TestCase):
         return private, reg_id
 
     def test_gcm_register_crypto_failing(self):
+        public = self._random_str(40, unicode=False)
+
         data = {
             'uuid': self.uuid,
             'regId': self._random_str(40),
-            'pubkey': b64encode(self._random_str(40, False))
+            'pubkey': b64encode(public)
         }
 
         rv = json.loads(self.app.post('/gcm', data=data).data)
@@ -227,7 +229,7 @@ class PushjetTestCase(unittest.TestCase):
         assert len(messages) == 1
 
         message_enc = self._failing_loader(messages[0])
-        assert message_enc['encrypted'] == True
+        assert message_enc['encrypted'] is True
         message_dec = str(rsa.decrypt(message_enc, private))
         message = json.loads(message_dec)
 
