@@ -9,6 +9,7 @@ class Subscription(db.Model):
     device = db.Column(db.VARCHAR(40), nullable=False)
     service_id = db.Column(INTEGER(unsigned=True), db.ForeignKey('service.id'), nullable=False)
     service = db.relationship('Service', backref=db.backref('subscription', lazy='dynamic'))
+    last_read = db.Column(INTEGER(unsigned=True), db.ForeignKey('message.id'), default=0)
     timestamp_created = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     timestamp_checked = db.Column(db.TIMESTAMP)
 

@@ -29,7 +29,7 @@ class Service(db.Model):
         return '<Service %r>' % self.name
 
     def cleanup(self):
-        threshold = self.subscribed().order_by(Subscription.timestamp_checked.asc()).first()
+        threshold = self.subscribed().order_by(Subscription.last_read.asc()).first().last_read
 
         # Nothing to do
         if not threshold:
@@ -37,7 +37,7 @@ class Service(db.Model):
 
         messages = Message.query \
             .filter_by(service=self) \
-            .filter(threshold.timestamp_checked > Message.timestamp_created) \
+            .filter(threshold > Message.id) \
             .all()
 
         map(db.session.delete, messages)

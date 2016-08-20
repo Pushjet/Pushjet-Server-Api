@@ -45,9 +45,11 @@ def message_recv(client):
     msg = []
     for l in subscriptions:
         msg += l.messages().all()
-        l.timestamp_checked = datetime.utcnow()
 
+    last_read = max([0] + [m.id for m in msg])
     for l in subscriptions:
+        l.timestamp_checked = datetime.utcnow()
+        l.last_read = max(l.last_read, last_read)
         l.service.cleanup()
 
     ret = jsonify({'messages': [m.as_dict() for m in msg]})
@@ -60,8 +62,10 @@ def message_recv(client):
 def message_read(client):
     subscriptions = Subscription.query.filter_by(device=client).all()
     if len(subscriptions) > 0:
+        last_message_id = Message.query.order_by(Message.id.desc()).first().id
         for l in subscriptions:
             l.timestamp_checked = datetime.utcnow()
+            l.last_read = last_message_id
 
         for l in subscriptions:
             l.service.cleanup()

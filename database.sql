@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `pushjet_api`.`subscription` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `device`            VARCHAR(40)      NOT NULL,
   `service_id`        INT(10) UNSIGNED NOT NULL,
+  `last_read`         INT(10) UNSIGNED NOT NULL DEFAULT '0',
   `timestamp_created` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `timestamp_checked` TIMESTAMP            NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
