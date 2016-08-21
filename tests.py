@@ -88,6 +88,11 @@ class PushjetTestCase(unittest.TestCase):
         self._failing_loader(rv.data)
         return public, secret, data
 
+    def test_message_send_no_subscribers(self):
+        # We just want to know if the server "accepts" it
+        public, secret, name = self.test_service_create()
+        self.test_message_send(public, secret)
+
     def test_message_receive(self, minimum=1):
         self.test_message_send()
         rv = self.app.get('/message?uuid=%s' % self.uuid)
