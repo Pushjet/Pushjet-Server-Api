@@ -15,6 +15,13 @@ def message_send(service):
     text = request.form.get('message')
     if not text:
         return jsonify(Error.ARGUMENT_MISSING('message'))
+
+    subscribers = Subscription.query.filter_by(service=service).count()
+    if subscribers == 0:
+        # Pretend we did something even though we didn't
+        # Nobody is listening so it doesn't really matter
+        return jsonify(Error.NONE)
+
     level = (request.form.get('level') or '3')[0]
     level = int(level) if level in "12345" else 3
     title = request.form.get('title', '').strip()[:255]
