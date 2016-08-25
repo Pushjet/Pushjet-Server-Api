@@ -43,11 +43,11 @@ class Gcm(db.Model):
             return 0
         gcm_filter = Gcm.query.filter(Gcm.uuid.in_([l.device for l in subscriptions])).all()
 
-        devices_plain = [r.gcmid for r in gcm_filter if r.pubkey is None]
+        devices = [r.gcmid for r in gcm_filter]
 
-        if len(devices_plain) > 0:
+        if len(devices) > 0:
             data = {"message": dumps(message.as_dict()), "encrypted": False}
-            Gcm.gcm_send(devices_plain, data)
+            Gcm.gcm_send(devices, data)
 
         if len(gcm_filter) > 0:
             uuids = [g.uuid for g in gcm_filter]
