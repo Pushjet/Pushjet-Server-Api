@@ -210,7 +210,10 @@ class PushjetTestCase(unittest.TestCase):
         reg_id = self.test_gcm_register()
         public, secret, data = self.test_message_send()
 
-        messages = [m['data'] for m in self.gcm if reg_id in m['registration_ids']]
+        messages = [m['data'] for m in self.gcm if
+                        reg_id in m['registration_ids'] and
+                        m['data']['message']['service']['public'] == public]
+
         assert len(messages) is 1
         assert messages[0]['encrypted'] is False
 
