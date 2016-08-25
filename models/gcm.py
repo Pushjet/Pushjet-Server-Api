@@ -1,7 +1,8 @@
-import rsa
 import urllib2
+
+from flask import current_app
+
 from shared import db
-from base64 import b64decode
 from json import dumps
 from sqlalchemy.dialects.mysql import INTEGER
 from datetime import datetime
@@ -46,7 +47,7 @@ class Gcm(db.Model):
         devices = [r.gcmid for r in gcm_filter]
 
         if len(devices) > 0:
-            data = {"message": dumps(message.as_dict()), "encrypted": False}
+            data = {"message": message.as_dict(), "encrypted": False}
             Gcm.gcm_send(devices, data)
 
         if len(gcm_filter) > 0:
@@ -55,19 +56,23 @@ class Gcm(db.Model):
             last_message = Message.query.order_by(Message.id.desc()).first()
             for l in gcm_subscriptions:
                 l.timestamp_checked = datetime.utcnow()
-                l.last_read = last_message.last_read if last_message else 0
+                l.last_read = last_message.id if last_message else 0
             db.session.commit()
         return len(gcm_filter)
 
     @staticmethod
     def gcm_send(ids, data):
-        data = dumps({
+        data = {
             "registration_ids": ids,
             "data": data,
-        })
-        headers = {
-            'Authorization': 'key=%s' % google_api_key,
-            'Content-Type': 'application/json',
         }
-        req = urllib2.Request('https://android.googleapis.com/gcm/send', data, headers)
-        urllib2.urlopen(req).read()
+
+        if current_app.config['TESTING'] is True:
+            current_app.config['TESTING_GCM'](data)
+        else:
+            headers = {
+                'Authorization': 'key=%s' % google_api_key,
+                'Content-Type': 'application/json',
+            }
+            req = urllib2.Request('https://android.googleapis.com/gcm/send', dumps(data), headers)
+            urllib2.urlopen(req).read()

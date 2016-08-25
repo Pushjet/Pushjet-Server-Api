@@ -191,9 +191,11 @@ class PushjetTestCase(unittest.TestCase):
         assert 'error' in rv and rv['error']['id'] is 7
 
     def test_gcm_register(self):
-        data = {'uuid': self.uuid, 'regId': self._random_str(40)}
+        reg_id = self._random_str(40, unicode=False)
+        data = {'uuid': self.uuid, 'regId': reg_id}
         rv = self.app.post('/gcm', data=data).data
         self._failing_loader(rv)
+        return reg_id
 
     def test_gcm_unregister(self):
         self.test_gcm_register()
@@ -204,6 +206,17 @@ class PushjetTestCase(unittest.TestCase):
         self.test_gcm_register()
         self.test_gcm_register()
 
+    def test_gmc_send(self):
+        reg_id = self.test_gcm_register()
+        public, secret, data = self.test_message_send()
+
+        messages = [m['data'] for m in self.gcm if reg_id in m['registration_ids']]
+        assert len(messages) is 1
+        assert messages[0]['encrypted'] is False
+
+        message = messages[0]['message']
+        assert message['service']['public'] == public
+        assert message['message'] == data['message']
 
 if __name__ == '__main__':
     unittest.main()
