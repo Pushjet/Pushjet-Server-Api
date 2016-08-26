@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from utils import Error, has_uuid, has_secret, queue_zmq_message, QUERY_ACTION_NEW_MESSAGE
+from utils import Error, has_uuid, has_secret, queue_zmq_message
 from shared import db
 from models import Subscription, Message, Gcm
 from datetime import datetime

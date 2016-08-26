@@ -1,4 +1,3 @@
-import sys
 from flask import current_app
 from shared import db
 from sqlalchemy.dialects.mysql import INTEGER

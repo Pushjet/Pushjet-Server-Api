@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from utils import Error, has_service, has_uuid, queue_zmq_message, QUERY_UPDATE_LISTEN
+from utils import Error, has_service, has_uuid, queue_zmq_message
 from shared import db
 from models import Subscription
 from json import dumps as json_encode

@@ -1,6 +1,6 @@
 from shared import db
 from sqlalchemy.dialects.mysql import INTEGER
-from datetime import datetime, timedelta
+from datetime import datetime
 from .message import Message
 
 
