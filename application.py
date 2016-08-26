@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from sys import exit, stderr
+from os import getenv
 
 try:
     import config
@@ -18,9 +19,9 @@ if config.google_api_key == '':
     stderr.write("GCM disabled, please enter the google api key for gcm")
 
 app = Flask(__name__)
-
+app.debug = config.debug or getenv('FLASK_DEBUG', 0) is 1
 app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False;
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 
@@ -53,5 +54,4 @@ if config.google_api_key is not "":
     app.register_blueprint(gcm)
 
 if __name__ == '__main__':
-    app.debug = True
     app.run()
