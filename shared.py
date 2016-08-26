@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import request
 from config import zeromq_relay_uri
 import zmq
 
