@@ -254,12 +254,12 @@ class PushjetTestCase(unittest.TestCase):
         assert message['service']['public'] == public
         assert message['message'] == data['message']
 
-    def test_get_version(self):
-        version = self.app.get('/version').data
-
-        assert len(version) is 7
-        with open('.git/refs/heads/master', 'r') as f:
-            assert f.read()[:7] == version
+#    def test_get_version(self):
+#        version = self.app.get('/version').data
+#
+#        assert len(version) is 7
+#        with open('.git/refs/heads/master', 'r') as f:
+#            assert f.read()[:7] == version
 
     def test_get_static(self):
         files = ['robots.txt', 'favicon.ico']
