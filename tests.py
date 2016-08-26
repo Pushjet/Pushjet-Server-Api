@@ -1,6 +1,8 @@
 # coding=utf-8
 from __future__ import unicode_literals
 
+import os
+
 from application import app
 from uuid import uuid4
 import unittest
@@ -95,37 +97,52 @@ class PushjetTestCase(unittest.TestCase):
         public, secret, name = self.test_service_create()
         self.test_message_send(public, secret)
 
-    def test_message_receive(self, minimum=1):
+    def test_message_receive(self, amount=-1):
+        if amount <= 0:
+            self.test_message_send()
+            amount = 1
+
+        rv = self.app.get('/message?uuid={}'.format(self.uuid))
+        resp = self._failing_loader(rv.data)
+        z = len(resp['messages'])
+        assert len(resp['messages']) is amount
+
+        # Ensure it is marked as read
+        rv = self.app.get('/message?uuid={}'.format(self.uuid))
+        resp = self._failing_loader(rv.data)
+        assert len(resp['messages']) is 0
+
+    def test_message_receive_no_subs(self):
         self.test_message_send()
-        rv = self.app.get('/message?uuid={}'.format(self.uuid))
+        rv = self.app.get('/message?uuid={}'.format(uuid4()))
         resp = self._failing_loader(rv.data)
-        assert len(resp['messages']) >= minimum
-        rv = self.app.get('/message?uuid={}'.format(self.uuid))
-        resp = self._failing_loader(rv.data)
-        assert len(resp['messages']) == 0
+        assert len(resp['messages']) is 0
 
     def test_message_receive_multi(self):
-        # Stress test it a bit
-        for _ in range(10):
-            public, secret, msg = self.test_message_send()
-            for __ in range(5):
-                self.test_message_send(public, secret)
-        self.test_message_receive(50)  # We sent at least 50 messages
+        self.test_message_mark_read()
 
-    def test_message_read(self):
+        for _ in range(3):
+            public, secret = self.test_subscription_new()
+            for _ in range(5):
+                self.test_message_send(public, secret)
+
+        self.test_message_receive(15)
+
+    def test_message_mark_read(self):
         self.test_message_send()
-        rv = self.app.delete('/message?uuid={}'.format(self.uuid))
+        self.app.delete('/message?uuid={}'.format(self.uuid))
         rv = self.app.get('/message?uuid={}'.format(self.uuid))
         resp = self._failing_loader(rv.data)
         assert len(resp['messages']) == 0
 
-    def test_message_read_multi(self):
+    def test_message_mark_read_multi(self):
         # Stress test it a bit
-        for _ in range(10):
-            public, secret, msg = self.test_message_send()
-            for __ in range(50):
+        for _ in range(3):
+            public, secret = self.test_subscription_new()
+            for _ in range(5):
                 self.test_message_send(public, secret)
-        self.test_message_read()
+
+        self.test_message_mark_read()
 
     def test_service_delete(self):
         public, secret = self.test_subscription_new()
@@ -221,6 +238,24 @@ class PushjetTestCase(unittest.TestCase):
         message = messages[0]['message']
         assert message['service']['public'] == public
         assert message['message'] == data['message']
+
+    def test_get_version(self):
+        version = self.app.get('/version').data
+
+        assert len(version) is 7
+        with open('.git/refs/heads/master', 'r') as f:
+            assert f.read()[:7] == version
+
+    def test_get_static(self):
+        files = ['robots.txt', 'favicon.ico']
+
+        for f in files:
+            path = os.path.join(self.app_real.root_path, 'static', f)
+            with open(path, 'rb') as i:
+                data = self.app.get('/{}'.format(f)).data
+                assert data == i.read()
+
+
 
 if __name__ == '__main__':
     unittest.main()
