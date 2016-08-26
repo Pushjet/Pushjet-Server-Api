@@ -19,7 +19,7 @@ if config.google_api_key == '':
     stderr.write("GCM disabled, please enter the google api key for gcm")
 
 app = Flask(__name__)
-app.debug = config.debug or getenv('FLASK_DEBUG', 0) is 1
+app.debug = config.debug or int(getenv('FLASK_DEBUG', 0)) > 0
 app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
