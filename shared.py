@@ -1,10 +1,11 @@
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from flask_limiter import Limiter
+from flask import request
 from config import zeromq_relay_uri
 import zmq
 
 db = SQLAlchemy()
-limiter = Limiter(global_limits=["120 per minute"])
+limiter = Limiter(global_limits=["120 per minute"], key_func=lambda: request.remote_addr)
 
 zmq_relay_socket = None
 zeromq_context = None
