@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request
+from flask import current_app
+
 from utils import Error, has_uuid, has_secret, queue_zmq_message
 from shared import db
 from models import Subscription, Message, Gcm
@@ -30,7 +32,7 @@ def message_send(service):
     db.session.add(msg)
     db.session.commit()
 
-    if google_api_key:
+    if google_api_key or current_app.config['TESTING']:
         Gcm.send_message(msg)
 
     if zeromq_relay_uri:

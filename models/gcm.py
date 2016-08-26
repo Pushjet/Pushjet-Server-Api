@@ -62,6 +62,6 @@ class Gcm(db.Model):
         data = dict(registration_ids=ids, data=data)
 
         if current_app.config['TESTING'] is True:
-            current_app.config['TESTING_GCM'](data)
+            current_app.config['TESTING_GCM'].append(data)
         else:
             requests.post(url, json=data, headers=headers)

@@ -20,12 +20,13 @@ class PushjetTestCase(unittest.TestCase):
     def setUp(self):
         config.google_api_key = config.google_api_key or 'PLACEHOLDER'
         self.uuid = str(uuid4())
-        self.gcm = []
 
         app.config['TESTING'] = True
-        app.config['TESTING_GCM'] = lambda x: self.gcm.append(x)
+        app.config['TESTING_GCM'] = []
 
+        self.gcm = app.config['TESTING_GCM']
         self.app = app.test_client()
+        self.app_real = app
 
     def _random_str(self, length=10, unicode=True):
         # A random string with the "cupcake" in Japanese appended to it
@@ -207,7 +208,7 @@ class PushjetTestCase(unittest.TestCase):
         self.test_gcm_register()
         self.test_gcm_register()
 
-    def test_gmc_send(self):
+    def test_gcm_send(self):
         reg_id = self.test_gcm_register()
         public, secret, data = self.test_message_send()
 
