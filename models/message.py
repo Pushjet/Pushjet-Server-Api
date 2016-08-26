@@ -21,7 +21,7 @@ class Message(db.Model):
         self.link = link
 
     def __repr__(self):
-        return '<Message %r>' % self.id
+        return '<Message {}>'.format(self.id)
 
     def as_dict(self):
         return {

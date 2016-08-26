@@ -26,7 +26,7 @@ class Service(db.Model):
         self.public = ''.join(pub)
 
     def __repr__(self):
-        return '<Service %r>' % self.name
+        return '<Service {}: {}>'.format(self.id, self.name)
 
     def cleanup(self):
         threshold = self.subscribed().order_by(Subscription.last_read.asc()).first().last_read

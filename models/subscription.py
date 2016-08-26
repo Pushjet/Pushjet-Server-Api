@@ -22,7 +22,7 @@ class Subscription(db.Model):
         self.last_read = last_message.id if last_message else 0
 
     def __repr__(self):
-        return '<Subscription %r>' % self.id
+        return '<Subscription {}>'.format(self.id)
 
     def messages(self):
         return Message.query \

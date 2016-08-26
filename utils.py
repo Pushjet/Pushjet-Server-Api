@@ -30,8 +30,8 @@ class Error(object):
     INVALID_PUBKEY = _e.__func__('Invalid public key supplied. Please send a DER formatted base64 encoded key.', 8)
 
     @staticmethod
-    def ARGUMENT_MISSING(s):
-        return Error._e('Missing argument %s' % s, 7)
+    def ARGUMENT_MISSING(arg):
+        return Error._e('Missing argument {}'.format(arg), 7)
 
 
 def has_uuid(f):

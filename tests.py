@@ -42,15 +42,15 @@ class PushjetTestCase(unittest.TestCase):
         data = json.loads(s)
         if 'error' in data:
             err = data['error']
-            raise AssertionError("Got an unexpected error, [%i] %s" % (err['id'], err['message']))
+            raise AssertionError("Got an unexpected error, [{}] {}".format(err['id'], err['message']))
 
         return data
 
     def test_service_create(self):
-        name = "Hello test! %s" % self._random_str(5)
+        name = "Hello test! {}".format(self._random_str(5))
         data = {
             "name": name,
-            "icon": "http://i.imgur.com/%s.png" % self._random_str(7, False)
+            "icon": "http://i.imgur.com/{}.png".format(self._random_str(7, False))
         }
         rv = json.loads(self.app.post('/service', data=data).data)
         assert 'service' in rv
@@ -65,12 +65,12 @@ class PushjetTestCase(unittest.TestCase):
 
     def test_subscription_delete(self):
         public, secret = self.test_subscription_new()
-        rv = self.app.delete('/subscription?uuid=%s&service=%s' % (self.uuid, public))
+        rv = self.app.delete('/subscription?uuid={}&service={}'.format(self.uuid, public))
         self._failing_loader(rv.data)
 
     def test_subscription_list(self):
         public, secret = self.test_subscription_new()
-        rv = self.app.get('/subscription?uuid=%s' % self.uuid)
+        rv = self.app.get('/subscription?uuid={}'.format(self.uuid))
         resp = self._failing_loader(rv.data)
         assert 'subscriptions' in resp
         assert len(resp['subscriptions']) == 1
@@ -81,8 +81,8 @@ class PushjetTestCase(unittest.TestCase):
             public, secret = self.test_subscription_new()
         data = {
             "level": random.randint(0, 5),
-            "message": "Test message - %s" % self._random_str(20),
-            "title": "Test Title - %s" % self._random_str(5),
+            "message": "Test message - {}".format(self._random_str(20)),
+            "title": "Test Title - {}".format(self._random_str(5)),
             "secret": secret,
         }
         rv = self.app.post('/message', data=data)
@@ -96,10 +96,10 @@ class PushjetTestCase(unittest.TestCase):
 
     def test_message_receive(self, minimum=1):
         self.test_message_send()
-        rv = self.app.get('/message?uuid=%s' % self.uuid)
+        rv = self.app.get('/message?uuid={}'.format(self.uuid))
         resp = self._failing_loader(rv.data)
         assert len(resp['messages']) >= minimum
-        rv = self.app.get('/message?uuid=%s' % self.uuid)
+        rv = self.app.get('/message?uuid={}'.format(self.uuid))
         resp = self._failing_loader(rv.data)
         assert len(resp['messages']) == 0
 
@@ -113,8 +113,8 @@ class PushjetTestCase(unittest.TestCase):
 
     def test_message_read(self):
         self.test_message_send()
-        rv = self.app.delete('/message?uuid=%s' % self.uuid)
-        rv = self.app.get('/message?uuid=%s' % self.uuid)
+        rv = self.app.delete('/message?uuid={}'.format(self.uuid))
+        rv = self.app.get('/message?uuid={}'.format(self.uuid))
         resp = self._failing_loader(rv.data)
         assert len(resp['messages']) == 0
 
@@ -132,21 +132,21 @@ class PushjetTestCase(unittest.TestCase):
         for _ in range(10):
             self.test_message_send(public, secret)
 
-        rv = self.app.delete('/service?secret=%s' % secret)
+        rv = self.app.delete('/service?secret={}'.format(secret))
         self._failing_loader(rv.data)
 
         # Does the service not exist anymore?
-        rv = self.app.get('/service?service=%s' % public)
+        rv = self.app.get('/service?service={}'.format(public))
         assert 'error' in json.loads(rv.data)
 
         # Has the subscriptioner been deleted?
-        rv = self.app.get('/subscription?uuid=%s' % self.uuid)
+        rv = self.app.get('/subscription?uuid={}'.format(self.uuid))
         resp = self._failing_loader(rv.data)
         assert public not in [l['service']['public'] for l in resp['subscriptions']]
 
     def test_service_info(self):
         public, secret, name = self.test_service_create()
-        rv = self.app.get('/service?service=%s' % public)
+        rv = self.app.get('/service?service={}'.format(public))
         data = self._failing_loader(rv.data)
         assert 'service' in data
         srv = data['service']
@@ -155,7 +155,7 @@ class PushjetTestCase(unittest.TestCase):
 
     def test_service_info_secret(self):
         public, secret, name = self.test_service_create()
-        rv = self.app.get('/service?secret=%s' % secret)
+        rv = self.app.get('/service?secret={}'.format(secret))
         data = self._failing_loader(rv.data)
         assert 'service' in data
         srv = data['service']
@@ -166,23 +166,23 @@ class PushjetTestCase(unittest.TestCase):
         public, secret, name = self.test_service_create()
         data = {
             "name": self._random_str(10),
-            "icon": "http://i.imgur.com/%s.png" % self._random_str(7, False)
+            "icon": "http://i.imgur.com/{}.png".format(self._random_str(7, False))
         }
-        rv = self.app.patch('/service?secret=%s' % secret, data=data).data
+        rv = self.app.patch('/service?secret={}'.format(secret), data=data).data
         self._failing_loader(rv)
 
         # Test if patched
-        rv = self.app.get('/service?service=%s' % public)
+        rv = self.app.get('/service?service={}'.format(public))
         rv = self._failing_loader(rv.data)['service']
         for key in data.keys():
             assert data[key] == rv[key]
 
     def test_uuid_regex(self):
-        rv = self.app.get('/service?service=%s' % self._random_str(20)).data
+        rv = self.app.get('/service?service={}'.format(self._random_str(20))).data
         assert 'error' in json.loads(rv)
 
     def test_service_regex(self):
-        rv = self.app.get('/message?uuid=%s' % self._random_str(20)).data
+        rv = self.app.get('/message?uuid={}'.format(self._random_str(20))).data
         assert 'error' in json.loads(rv)
 
     def test_missing_arg(self):

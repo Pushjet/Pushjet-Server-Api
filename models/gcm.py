@@ -21,7 +21,7 @@ class Gcm(db.Model):
         self.gcmid = gcmid
 
     def __repr__(self):
-        return '<Gcm %r>' % self.uuid
+        return '<Gcm {}>'.format(self.uuid)
 
     def as_dict(self):
         data = {
