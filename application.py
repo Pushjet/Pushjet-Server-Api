@@ -8,7 +8,7 @@ from os import getenv
 try:
     import config
 except ImportError:
-    stderr.write("Please copy config.example.py to config.py and edit the file.")
+    stderr.write("FATAL: Please copy config.example.py to config.py and edit the file.")
     exit(1)
 
 from shared import db
@@ -16,7 +16,7 @@ from controllers import *
 from utils import Error
 
 if config.google_api_key == '':
-    stderr.write("GCM disabled, please enter the google api key for gcm")
+    stderr.write("WARNING: GCM disabled, please enter the google api key for gcm")
 
 app = Flask(__name__)
 app.debug = config.debug or int(getenv('FLASK_DEBUG', 0)) > 0
