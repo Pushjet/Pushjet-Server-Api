@@ -1,13 +1,11 @@
-import urllib2
-
+import sys
 from flask import current_app
-
 from shared import db
-from json import dumps
 from sqlalchemy.dialects.mysql import INTEGER
 from datetime import datetime
 from config import google_api_key
 from models import Subscription, Message
+import requests
 
 gcm_url = 'https://android.googleapis.com/gcm/send'
 
@@ -42,37 +40,29 @@ class Gcm(db.Model):
         subscriptions = Subscription.query.filter_by(service=message.service).all()
         if len(subscriptions) == 0:
             return 0
-        gcm_filter = Gcm.query.filter(Gcm.uuid.in_([l.device for l in subscriptions])).all()
+        gcm_devices = Gcm.query.filter(Gcm.uuid.in_([l.device for l in subscriptions])).all()
 
-        devices = [r.gcmid for r in gcm_filter]
+        if len(gcm_devices) > 0:
+            data = dict(message=message.as_dict(), encrypted=False)
+            Gcm.gcm_send([r.gcmid for r in gcm_devices], data)
 
-        if len(devices) > 0:
-            data = {"message": message.as_dict(), "encrypted": False}
-            Gcm.gcm_send(devices, data)
-
-        if len(gcm_filter) > 0:
-            uuids = [g.uuid for g in gcm_filter]
+        if len(gcm_devices) > 0:
+            uuids = [g.uuid for g in gcm_devices]
             gcm_subscriptions = Subscription.query.filter_by(service=message.service).filter(Subscription.device.in_(uuids)).all()
             last_message = Message.query.order_by(Message.id.desc()).first()
             for l in gcm_subscriptions:
                 l.timestamp_checked = datetime.utcnow()
                 l.last_read = last_message.id if last_message else 0
             db.session.commit()
-        return len(gcm_filter)
+        return len(gcm_devices)
 
     @staticmethod
     def gcm_send(ids, data):
-        data = {
-            "registration_ids": ids,
-            "data": data,
-        }
+        url = 'https://android.googleapis.com/gcm/send'
+        headers = dict(Authorization='key={}'.format(google_api_key))
+        data = dict(registration_ids=ids, data=data)
 
         if current_app.config['TESTING'] is True:
             current_app.config['TESTING_GCM'](data)
         else:
-            headers = {
-                'Authorization': 'key=%s' % google_api_key,
-                'Content-Type': 'application/json',
-            }
-            req = urllib2.Request('https://android.googleapis.com/gcm/send', dumps(data), headers)
-            urllib2.urlopen(req).read()
+            requests.post(url, json=data, headers=headers)
