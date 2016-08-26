@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from utils import Error, has_uuid, has_secret, queue_zmq_message, QUERY_ACTION_NEW_MESSAGE
-from shared import db, limiter
+from shared import db
 from models import Subscription, Message, Gcm
 from datetime import datetime
 from config import zeromq_relay_uri, google_api_key
@@ -42,7 +42,6 @@ def message_send(service):
 
 
 @message.route('/message', methods=['GET'])
-@limiter.limit('15 per minute')
 @has_uuid
 def message_recv(client):
     subscriptions = Subscription.query.filter_by(device=client).all()

@@ -10,7 +10,7 @@ except ImportError:
     stderr.write("Please copy config.example.py to config.py and edit the file.")
     exit(1)
 
-from shared import db, limiter
+from shared import db
 from controllers import *
 from utils import Error
 
@@ -22,8 +22,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False;
 db.init_app(app)
-limiter.init_app(app)
-limiter.enabled = config.limiter
 
 
 @app.route('/')

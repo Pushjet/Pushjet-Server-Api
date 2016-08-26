@@ -1,30 +1,30 @@
 # coding=utf-8
 from __future__ import unicode_literals
 
+from application import app
 from uuid import uuid4
-import os
 import unittest
 import string
 import random
 import json
 import sys
 
-if not os.path.exists('config.py'):
+try:
+    import config
+except ImportError:
     sys.exit('Please copy config.example.py to config.py and configure it')
-import config
+
 
 
 class PushjetTestCase(unittest.TestCase):
     def setUp(self):
         config.google_api_key = config.google_api_key or 'PLACEHOLDER'
-        from application import app, limiter
         self.uuid = str(uuid4())
         self.gcm = []
 
         app.config['TESTING'] = True
         app.config['TESTING_GCM'] = lambda x: self.gcm.append(x)
 
-        limiter.enabled = False
         self.app = app.test_client()
 
     def _random_str(self, length=10, unicode=True):
