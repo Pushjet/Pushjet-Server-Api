@@ -1,5 +1,6 @@
 # coding=utf-8
 from __future__ import unicode_literals
+
 from uuid import uuid4
 import os
 import unittest
@@ -41,8 +42,8 @@ class PushjetTestCase(unittest.TestCase):
         data = json.loads(s)
         if 'error' in data:
             err = data['error']
-            print("Got an unexpected error, [%i] %s" % (err['id'], err['message']))
-            assert False
+            raise AssertionError("Got an unexpected error, [%i] %s" % (err['id'], err['message']))
+
         return data
 
     def test_service_create(self):
@@ -210,9 +211,8 @@ class PushjetTestCase(unittest.TestCase):
         reg_id = self.test_gcm_register()
         public, secret, data = self.test_message_send()
 
-        messages = [m['data'] for m in self.gcm if
-                        reg_id in m['registration_ids'] and
-                        m['data']['message']['service']['public'] == public]
+        messages = [m['data'] for m in self.gcm
+                    if reg_id in m['registration_ids']]
 
         assert len(messages) is 1
         assert messages[0]['encrypted'] is False
