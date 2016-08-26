@@ -61,10 +61,16 @@ class PushjetTestCase(unittest.TestCase):
 
     def test_subscription_new(self):
         public, secret, name = self.test_service_create()
-        data = {"uuid": self.uuid, "service": public}
+        data = dict(uuid=self.uuid, service=public)
         rv = self.app.post('/subscription', data=data)
         self._failing_loader(rv.data)
         return public, secret
+
+    def test_subscription_double(self):
+        public, secret = self.test_subscription_new()
+        data = dict(uuid=self.uuid, service=public)
+        rv = self.app.post('/subscription', data=data)
+        assert 'error' in json.loads(rv.data)
 
     def test_subscription_delete(self):
         public, secret = self.test_subscription_new()
@@ -130,6 +136,15 @@ class PushjetTestCase(unittest.TestCase):
 
     def test_message_mark_read(self):
         self.test_message_send()
+        self.app.delete('/message?uuid={}'.format(self.uuid))
+        rv = self.app.get('/message?uuid={}'.format(self.uuid))
+        resp = self._failing_loader(rv.data)
+        assert len(resp['messages']) == 0
+
+    def test_message_mark_read_double(self):
+        self.test_message_mark_read()
+
+        # Read again without sending
         self.app.delete('/message?uuid={}'.format(self.uuid))
         rv = self.app.get('/message?uuid={}'.format(self.uuid))
         resp = self._failing_loader(rv.data)
@@ -254,7 +269,6 @@ class PushjetTestCase(unittest.TestCase):
             with open(path, 'rb') as i:
                 data = self.app.get('/{}'.format(f)).data
                 assert data == i.read()
-
 
 
 if __name__ == '__main__':
