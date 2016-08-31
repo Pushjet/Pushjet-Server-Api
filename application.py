@@ -15,8 +15,17 @@ from shared import db
 from controllers import *
 from utils import Error
 
+gcm_enabled = True
 if config.google_api_key == '':
     stderr.write("WARNING: GCM disabled, please enter the google api key for gcm")
+    gcm_enabled = False
+if not isinstance(config.google_gcm_sender_id, int):
+    stderr.write("WARNING: GCM disabled, sender id is not an integer")
+    gcm_enabled = False
+elif config.google_gcm_sender_id == 0:
+    stderr.write('WARNING: GCM disabled, invalid sender id found')
+    gcm_enabled = False
+
 
 app = Flask(__name__)
 app.debug = config.debug or int(getenv('FLASK_DEBUG', 0)) > 0
@@ -50,7 +59,7 @@ def limit_rate(e):
 app.register_blueprint(subscription)
 app.register_blueprint(message)
 app.register_blueprint(service)
-if config.google_api_key is not "":
+if gcm_enabled:
     app.register_blueprint(gcm)
 
 if __name__ == '__main__':

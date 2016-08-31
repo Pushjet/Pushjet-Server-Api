@@ -2,8 +2,6 @@
 from __future__ import unicode_literals
 
 import os
-
-from application import app
 from uuid import uuid4
 import unittest
 import string
@@ -17,11 +15,12 @@ except ImportError:
     sys.exit('Please copy config.example.py to config.py and configure it')
 
 
-
 class PushjetTestCase(unittest.TestCase):
     def setUp(self):
         config.google_api_key = config.google_api_key or 'PLACEHOLDER'
+
         self.uuid = str(uuid4())
+        from application import app
 
         app.config['TESTING'] = True
         app.config['TESTING_GCM'] = []

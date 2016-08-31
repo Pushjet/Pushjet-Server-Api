@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from utils import has_uuid, Error
 from models import Gcm
 from shared import db
+from config import google_gcm_sender_id
 
 gcm = Blueprint('gcm', __name__)
 
@@ -30,4 +31,10 @@ def gcm_unregister(client):
         db.session.delete(u)
     db.session.commit()
     return jsonify(Error.NONE)
+
+
+@gcm.route("/gcm", methods=["GET"])
+def gcm_sender_id():
+    data = dict(sender_id=google_gcm_sender_id)
+    return jsonify(data)
 

@@ -7,6 +7,7 @@ debug = False
 
 # Google Cloud Messaging configuration (required for android!)
 google_api_key = ''
+google_gcm_sender_id = 509878466986  # Change this to your gcm sender id
 
 # Message Queueing, this should be the relay. A "sane" value
 # for this would be something like ipc:///tmp/pushjet-relay.ipc
