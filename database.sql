@@ -10,11 +10,11 @@ SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'TRADITIONAL,ALLOW_INVALID_DATES';
 
 
 -- -----------------------------------------------------
--- Table `pushjet_api`.`subscription`
+-- Table `subscription`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `subscription`;
 
-CREATE TABLE IF NOT EXISTS `pushjet_api`.`subscription` (
+CREATE TABLE IF NOT EXISTS `subscription` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `device`            VARCHAR(40)      NOT NULL,
   `service_id`        INT(10) UNSIGNED NOT NULL,
@@ -29,11 +29,11 @@ CREATE TABLE IF NOT EXISTS `pushjet_api`.`subscription` (
 
 
 -- -----------------------------------------------------
--- Table `pushjet_api`.`message`
+-- Table `message`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `message`;
 
-CREATE TABLE IF NOT EXISTS `pushjet_api`.`message` (
+CREATE TABLE IF NOT EXISTS `message` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `service_id`        INT(10) UNSIGNED NOT NULL,
   `text`              TEXT             NOT NULL,
@@ -48,11 +48,11 @@ CREATE TABLE IF NOT EXISTS `pushjet_api`.`message` (
   COLLATE = utf8_unicode_ci;
 
 -- -----------------------------------------------------
--- Table `pushjet_api`.`service`
+-- Table `service`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `service`;
 
-CREATE TABLE IF NOT EXISTS `pushjet_api`.`service` (
+CREATE TABLE IF NOT EXISTS `service` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `secret`            VARCHAR(32)      NOT NULL,
   `public`            VARCHAR(40)      NOT NULL,
@@ -66,11 +66,11 @@ CREATE TABLE IF NOT EXISTS `pushjet_api`.`service` (
   COLLATE = utf8_unicode_ci;
 
 -- -----------------------------------------------------
--- Table `pushjet_api`.`gcm`
+-- Table `gcm`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `gcm`;
 
-CREATE TABLE IF NOT EXISTS `pushjet_api`.`gcm` (
+CREATE TABLE IF NOT EXISTS `gcm` (
   `id`                INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `uuid`              VARCHAR(40)      NOT NULL,
   `gcmid`             TEXT             NOT NULL,
