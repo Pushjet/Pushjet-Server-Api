@@ -76,12 +76,16 @@ def service_delete(service):
 @has_secret
 def service_patch(service):
     fields = ['name', 'icon']
+    updated = False
 
     for field in fields:
         data = request.form.get(field, '').strip()
         if data is not '':
             setattr(service, field, data)
+            updated = True
 
-    db.session.commit()
-
-    return jsonify(Error.NONE)
+    if updated:
+        db.session.commit()
+        return jsonify(Error.NONE)
+    else:
+        return jsonify(Error.NO_CHANGES)

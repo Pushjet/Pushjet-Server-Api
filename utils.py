@@ -26,9 +26,10 @@ class Error(object):
     DUPLICATE_LISTEN = _e.__func__('Already subscribed to that service', 4)
     RATE_TOOFAST = _e.__func__('Whoaw there cowboy, slow down!', 5)
     SERVICE_NOTFOUND = _e.__func__('Service not found', 6)
-    CONNECTION_CLOSING = _e.__func__('Connection closing', 7)
     INVALID_PUBKEY = _e.__func__('Invalid public key supplied. Please send a DER formatted base64 encoded key.', 8)
-
+    CONNECTION_CLOSING = _e.__func__('Connection closing', 9)
+    NO_CHANGES = _e.__func__('No changes were made', 10)
+ 
     @staticmethod
     def ARGUMENT_MISSING(arg):
         return Error._e('Missing argument {}'.format(arg), 7)
