@@ -34,6 +34,6 @@ class Subscription(db.Model):
             "uuid": self.device,
             "service": self.service.as_dict(),
             "timestamp": int((self.timestamp_created - datetime.utcfromtimestamp(0)).total_seconds()),
-            "timestamp_checked": int((self.timestamp_created - datetime.utcfromtimestamp(0)).total_seconds())
+            "timestamp_checked": int((self.timestamp_checked - datetime.utcfromtimestamp(0)).total_seconds())
         }
         return data
