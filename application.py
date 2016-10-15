@@ -53,7 +53,7 @@ def version():
 
 @app.errorhandler(429)
 def limit_rate(e):
-    return jsonify(Error.RATE_TOOFAST)
+    return Error.RATE_TOOFAST
 
 
 app.register_blueprint(subscription)

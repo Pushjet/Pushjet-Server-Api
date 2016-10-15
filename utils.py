@@ -1,4 +1,5 @@
 from re import compile
+from json import dumps
 from flask import request, jsonify
 from functools import wraps
 from models import Service
@@ -16,23 +17,23 @@ QUERY_UPDATE_LISTEN = 1
 
 class Error(object):
     @staticmethod
-    def _e(m, c):
-        return {'error': {'message': m, 'id': c}}
+    def _e(message, error_code, http_status):
+        return (dumps({'error': {'message': message, 'id': error_code}}), http_status)
 
-    NONE = {'status': 'ok'}
-    INVALID_CLIENT = _e.__func__('Invalid client uuid', 1)
-    INVALID_SERVICE = _e.__func__('Invalid service', 2)
-    INVALID_SECRET = _e.__func__('Invalid secret', 3)
-    DUPLICATE_LISTEN = _e.__func__('Already subscribed to that service', 4)
-    RATE_TOOFAST = _e.__func__('Whoaw there cowboy, slow down!', 5)
-    SERVICE_NOTFOUND = _e.__func__('Service not found', 6)
-    INVALID_PUBKEY = _e.__func__('Invalid public key supplied. Please send a DER formatted base64 encoded key.', 8)
-    CONNECTION_CLOSING = _e.__func__('Connection closing', 9)
-    NO_CHANGES = _e.__func__('No changes were made', 10)
+    NONE = (dumps({'status': 'ok'}), 200) # OK
+    INVALID_CLIENT = _e.__func__('Invalid client uuid', 1, 400) # Bad request
+    INVALID_SERVICE = _e.__func__('Invalid service', 2, 400) # - || -
+    INVALID_SECRET = _e.__func__('Invalid secret', 3, 400) # - || -
+    DUPLICATE_LISTEN = _e.__func__('Already subscribed to that service', 4, 409) # Conflict
+    RATE_TOOFAST = _e.__func__('Whoaw there cowboy, slow down!', 5, 429) # Too many requests
+    SERVICE_NOTFOUND = _e.__func__('Service not found', 6, 404)
+    INVALID_PUBKEY = _e.__func__('Invalid public key supplied. Please send a DER formatted base64 encoded key.', 8, 400) # Bad request
+    CONNECTION_CLOSING = _e.__func__('Connection closing', 9, 499) # Client closed request
+    NO_CHANGES = _e.__func__('No changes were made', 10, 400) # Bad request
  
     @staticmethod
     def ARGUMENT_MISSING(arg):
-        return Error._e('Missing argument {}'.format(arg), 7)
+        return Error._e('Missing argument {}'.format(arg), 7, 400) # Bad request
 
 
 def has_uuid(f):
@@ -40,9 +41,9 @@ def has_uuid(f):
     def df(*args, **kwargs):
         client = request.form.get('uuid', '') or request.args.get('uuid', '')
         if not client:
-            return jsonify(Error.ARGUMENT_MISSING('uuid'))
+            return Error.ARGUMENT_MISSING('uuid')
         if not is_uuid(client):
-            return jsonify(Error.INVALID_CLIENT)
+            return Error.INVALID_CLIENT
         return f(*args, client=client, **kwargs)
 
     return df
@@ -53,13 +54,13 @@ def has_service(f):
     def df(*args, **kwargs):
         service = request.form.get('service', '') or request.args.get('service', '')
         if not service:
-            return jsonify(Error.ARGUMENT_MISSING('service'))
+            return Error.ARGUMENT_MISSING('service')
         if not is_service(service):
-            return jsonify(Error.INVALID_SERVICE)
+            return Error.INVALID_SERVICE
 
         srv = Service.query.filter_by(public=service).first()
         if not srv:
-            return jsonify(Error.SERVICE_NOTFOUND)
+            return Error.SERVICE_NOTFOUND
         return f(*args, service=srv, **kwargs)
 
     return df
@@ -70,13 +71,13 @@ def has_secret(f):
     def df(*args, **kwargs):
         secret = request.form.get('secret', '') or request.args.get('secret', '')
         if not secret:
-            return jsonify(Error.ARGUMENT_MISSING('secret'))
+            return Error.ARGUMENT_MISSING('secret')
         if not is_secret(secret):
-            return jsonify(Error.INVALID_SECRET)
+            return Error.INVALID_SECRET
 
         srv = Service.query.filter_by(secret=secret).first()
         if not srv:
-            return jsonify(Error.SERVICE_NOTFOUND)
+            return Error.SERVICE_NOTFOUND
         return f(*args, service=srv, **kwargs)
 
     return df

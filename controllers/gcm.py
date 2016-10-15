@@ -20,7 +20,7 @@ def gcm_register(client):
     reg = Gcm(client, registration)
     db.session.add(reg)
     db.session.commit()
-    return jsonify(Error.NONE)
+    return Error.NONE
 
 
 @gcm.route("/gcm", methods=["DELETE"])
@@ -30,7 +30,7 @@ def gcm_unregister(client):
     for u in regs:
         db.session.delete(u)
     db.session.commit()
-    return jsonify(Error.NONE)
+    return Error.NONE
 
 
 @gcm.route("/gcm", methods=["GET"])
