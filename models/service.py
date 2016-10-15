@@ -49,7 +49,7 @@ class Service(db.Model):
         data = {
             "public": self.public,
             "name": self.name,
-            "created": int(self.timestamp_created.strftime("%s")),
+            "created": int((self.timestamp_created - datetime.utcfromtimestamp(0)).total_seconds()),
             "icon": self.icon,
         }
         if secret:
