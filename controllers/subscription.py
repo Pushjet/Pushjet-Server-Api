@@ -14,7 +14,7 @@ subscription = Blueprint('subscription', __name__)
 def subscription_post(client, service):
     exists = Subscription.query.filter_by(device=client).filter_by(service=service).first() is not None
     if exists:
-        return jsonify(Error.DUPLICATE_LISTEN)
+        return Error.DUPLICATE_LISTEN
 
     subscription_new = Subscription(client, service)
     db.session.add(subscription_new)
@@ -41,4 +41,4 @@ def subscription_delete(client, service):
     if l is not None:
         db.session.delete(l)
         db.session.commit()
-    return jsonify(Error.NONE)
+    return Error.NONE

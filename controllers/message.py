@@ -16,13 +16,13 @@ message = Blueprint('message', __name__)
 def message_send(service):
     text = request.form.get('message')
     if not text:
-        return jsonify(Error.ARGUMENT_MISSING('message'))
+        return Error.ARGUMENT_MISSING('message')
 
     subscribers = Subscription.query.filter_by(service=service).count()
     if subscribers == 0:
         # Pretend we did something even though we didn't
         # Nobody is listening so it doesn't really matter
-        return jsonify(Error.NONE)
+        return Error.NONE
 
     level = (request.form.get('level') or '3')[0]
     level = int(level) if level in "12345" else 3
@@ -40,7 +40,7 @@ def message_send(service):
 
     service.cleanup()
     db.session.commit()
-    return jsonify(Error.NONE)
+    return Error.NONE
 
 
 @message.route('/message', methods=['GET'])
@@ -79,4 +79,4 @@ def message_read(client):
             l.service.cleanup()
         db.session.commit()
 
-    return jsonify(Error.NONE)
+    return Error.NONE

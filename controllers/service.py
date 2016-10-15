@@ -13,7 +13,7 @@ def service_create():
     name = request.form.get('name', '').strip()
     icon = request.form.get('icon', '').strip()
     if not name:
-        return jsonify(Error.ARGUMENT_MISSING('name'))
+        return Error.ARGUMENT_MISSING('name')
     srv = Service(name, icon)
     db.session.add(srv)
     db.session.commit()
@@ -27,23 +27,23 @@ def service_info():
 
     if service_:
         if not is_service(service_):
-            return jsonify(Error.INVALID_SERVICE)
+            return Error.INVALID_SERVICE
 
         srv = Service.query.filter_by(public=service_).first()
         if not srv:
-            return jsonify(Error.SERVICE_NOTFOUND)
+            return Error.SERVICE_NOTFOUND
         return jsonify({"service": srv.as_dict()})
 
     if secret:
         if not is_secret(secret):
-            return jsonify(Error.INVALID_SECRET)
+            return Error.INVALID_SECRET
 
         srv = Service.query.filter_by(secret=secret).first()
         if not srv:
-            return jsonify(Error.SERVICE_NOTFOUND)
+            return Error.SERVICE_NOTFOUND
         return jsonify({"service": srv.as_dict()})
 
-    return jsonify(Error.ARGUMENT_MISSING('service'))
+    return Error.ARGUMENT_MISSING('service')
 
 
 @service.route('/service', methods=['DELETE'])
@@ -69,7 +69,7 @@ def service_delete(service):
     if zeromq_relay_uri:
         map(queue_zmq_message, send_later)
 
-    return jsonify(Error.NONE)
+    return Error.NONE
 
 
 @service.route('/service', methods=['PATCH'])
@@ -86,6 +86,6 @@ def service_patch(service):
 
     if updated:
         db.session.commit()
-        return jsonify(Error.NONE)
+        return Error.NONE
     else:
-        return jsonify(Error.NO_CHANGES)
+        return Error.NO_CHANGES
