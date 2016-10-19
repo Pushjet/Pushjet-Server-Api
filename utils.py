@@ -30,7 +30,8 @@ class Error(object):
     INVALID_PUBKEY = _e.__func__('Invalid public key supplied. Please send a DER formatted base64 encoded key.', 8, 400) # Bad request
     CONNECTION_CLOSING = _e.__func__('Connection closing', 9, 499) # Client closed request
     NO_CHANGES = _e.__func__('No changes were made', 10, 400) # Bad request
- 
+    NOT_SUBSCRIBED = _e.__func__('Not subscribed to that service', 11, 409) # Conflict
+
     @staticmethod
     def ARGUMENT_MISSING(arg):
         return Error._e('Missing argument {}'.format(arg), 7, 400) # Bad request

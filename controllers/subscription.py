@@ -41,4 +41,5 @@ def subscription_delete(client, service):
     if l is not None:
         db.session.delete(l)
         db.session.commit()
-    return Error.NONE
+        return Error.NONE
+    return Error.NOT_SUBSCRIBED

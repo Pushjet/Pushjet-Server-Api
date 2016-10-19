@@ -69,12 +69,26 @@ class PushjetTestCase(unittest.TestCase):
         public, secret = self.test_subscription_new()
         data = dict(uuid=self.uuid, service=public)
         rv = self.app.post('/subscription', data=data)
-        assert 'error' in json.loads(rv.data)
+        assert rv.status_code == 409
+        data = json.loads(rv.data)
+        assert 'error' in data
+        assert data['error']['id'] == 4
 
     def test_subscription_delete(self):
         public, secret = self.test_subscription_new()
         rv = self.app.delete('/subscription?uuid={}&service={}'.format(self.uuid, public))
         self._failing_loader(rv.data)
+        return public, secret
+    
+    def test_subscription_invalid_delete(self):
+        # Without a just-deleted service there's a chance to get an existing
+        # one, as a test database isn't created when running tests.
+        public, secret = self.test_subscription_delete()
+        rv = self.app.delete('/subscription?uuid={}&service={}'.format(self.uuid, public))
+        assert rv.status_code == 409
+        data = json.loads(rv.data)
+        assert 'error' in data
+        assert data['error']['id'] == 11
 
     def test_subscription_list(self):
         public, secret = self.test_subscription_new()
