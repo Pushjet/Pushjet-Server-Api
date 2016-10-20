@@ -35,8 +35,9 @@ class PushjetTestCase(unittest.TestCase):
         random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
         if unicode:
-            random_str = random_str[:-7] + u'カップケーキ'
-            random_str = u'☕' + random_str
+            random_str = random_str[:-7] + 'カップケーキ'
+            # It's important that the following is a 4+-byte Unicode character.
+            random_str = '😉' + random_str
 
         return random_str
 
