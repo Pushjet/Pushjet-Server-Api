@@ -32,6 +32,8 @@ app.debug = config.debug or int(getenv('FLASK_DEBUG', 0)) > 0
 app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+with app.app_context():
+    db.engine.execute("SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'")
 
 
 @app.route('/')
